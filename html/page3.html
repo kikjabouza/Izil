@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Questionnaire Enfant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #4a6fa5;
+            --primary-foreground: #ffffff;
+            --primary-hover: #3a5a8c;
+            --lavender: #9d8df1;
+            --mint: #88d9e6;
+            --peach: #ffb8a1;
+            --sunshine: #ffd166;
+            --background: #f8f9fa;
+            --foreground: #1a1a1a;
+            --muted: #6c757d;
+            --muted-foreground: #6c757d;
+            --card: #ffffff;
+            --card-foreground: #1a1a1a;
+            --border: #e0e0e0;
+            --border-hover: #d0d0d0;
+            --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-medium: 0 8px 24px rgba(0, 0, 0, 0.12);
+            --shadow-glow: 0 8px 32px rgba(74, 111, 165, 0.2);
+            --border-radius-sm: 0.5rem;
+            --border-radius: 1rem;
+            --border-radius-lg: 1.5rem;
+            --border-radius-xl: 2rem;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            color: var(--foreground);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Barre de progression */
+        .progress-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-text {
+            font-size: 0.875rem;
+            color: var(--muted-foreground);
+        }
+
+        .progress-percentage {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--primary);
+        }
+
+        .progress-bar {
+            height: 0.75rem;
+            background-color: var(--border);
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary), var(--lavender));
+            border-radius: 9999px;
+            width: 12.5%;
+            transition: width 0.3s ease;
+        }
+
+        /* Carte */
+        .card {
+            background-color: var(--card);
+            border-radius: var(--border-radius-xl);
+            padding: 2rem;
+            box-shadow: var(--shadow-medium);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-glow);
+            border-color: rgba(74, 111, 165, 0.2);
+        }
+
+        /* En-tête de question */
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+        }
+
+        #question-title {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: var(--foreground);
+            line-height: 1.3;
+            flex: 1;
+            margin-right: 1rem;
+        }
+
+        .speak-btn {
+            background: transparent;
+            border: none;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .speak-btn:hover {
+            background-color: rgba(74, 111, 165, 0.1);
+        }
+
+        .speak-btn i {
+            color: var(--primary);
+            font-size: 1.25rem;
+        }
+
+        /* Contenu de la question */
+        .question-content {
+            margin-bottom: 2.5rem;
+        }
+
+        /* Input text */
+        .text-input {
+            width: 100%;
+            height: 4rem;
+            padding: 0 1.5rem;
+            border-radius: var(--border-radius-lg);
+            border: 2px solid var(--border);
+            background-color: var(--background);
+            font-size: 1.25rem;
+            text-align: center;
+            transition: border-color 0.3s ease;
+        }
+
+        .text-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Slider */
+        .slider-container {
+            text-align: center;
+        }
+
+        .slider-value {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-value span {
+            font-size: 1.75rem;
+            color: var(--muted-foreground);
+            margin-left: 0.5rem;
+        }
+
+        .slider {
+            width: 100%;
+            height: 1rem;
+            -webkit-appearance: none;
+            appearance: none;
+            background: var(--border);
+            border-radius: 9999px;
+            outline: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .slider::-moz-range-thumb {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Options */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .options-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .option-btn {
+            padding: 1.5rem;
+            border-radius: var(--border-radius-xl);
+            border: 2px solid var(--border);
+            background-color: var(--card);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--foreground);
+        }
+
+        .option-btn:hover {
+            border-color: rgba(74, 111, 165, 0.5);
+            background-color: rgba(74, 111, 165, 0.05);
+        }
+
+        .option-btn.selected {
+            border-color: var(--primary);
+            background-color: rgba(74, 111, 165, 0.1);
+            transform: scale(1.05);
+        }
+
+        .option-icon {
+            font-size: 2.5rem;
+        }
+
+        .option-label {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .check-icon {
+            color: var(--primary);
+            font-size: 1.25rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Navigation */
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2.5rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius-lg);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 2px solid transparent;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border-color: var(--border);
+            color: var(--foreground);
+        }
+
+        .btn-outline:hover:not(:disabled) {
+            border-color: var(--primary);
+            background-color: rgba(74, 111, 165, 0.05);
+            transform: scale(1.05);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+            border: none;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: var(--primary-hover);
+            transform: scale(1.05);
+            box-shadow: var(--shadow-glow);
+        }
+
+        /* Bulles flottantes */
+        #bubbles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.15;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background-color: #10b981;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-medium);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast i {
+            font-size: 1.25rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Barre de progression -->
+        <div class="progress-container">
+            <div class="progress-header">
+                <span class="progress-text">Question <span id="current-question">1</span> sur <span id="total-questions">8</span></span>
+                <span class="progress-percentage" id="progress-percentage">13%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+
+        <!-- Carte principale -->
+        <div class="card" id="question-card">
+            <div class="question-header">
+                <h2 id="question-title">Quel est le prénom de l'enfant ?</h2>
+                <button class="speak-btn" id="speak-btn">
+                    <i class="fas fa-volume-up"></i>
+                </button>
+            </div>
+
+            <!-- Contenu de la question -->
+            <div class="question-content" id="question-content">
+                <input type="text" class="text-input" id="name-input" placeholder="Prénom de l'enfant" autofocus>
+            </div>
+
+            <!-- Navigation -->
+            <div class="navigation">
+                <button class="btn btn-outline" id="prev-btn" disabled>
+                    <i class="fas fa-arrow-left"></i>
+                    Précédent
+                </button>
+                <button class="btn btn-primary" id="next-btn">
+                    Suivant
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulles flottantes -->
+    <div id="bubbles-container"></div>
+
+    <!-- Toast de succès -->
+    <div class="toast" id="success-toast">
+        <i class="fas fa-check-circle"></i>
+        <span>Profil créé avec succès !</span>
+    </div>
+
+    <script>
+        // Données des questions
+        const questions = [
+            {
+                id: 'name',
+                title: "Quel est le prénom de l'enfant ?",
+                type: 'single',
+                options: [],
+            },
+            {
+                id: 'age',
+                title: "Quel âge a l'enfant ?",
+                type: 'slider',
+                min: 2,
+                max: 18,
+            },
+            {
+                id: 'favoriteColors',
+                title: 'Quelles sont ses couleurs préférées ?',
+                type: 'multiple',
+                options: [
+                    { value: 'blue', label: 'Bleu', icon: '🔵' },
+                    { value: 'green', label: 'Vert', icon: '🟢' },
+                    { value: 'pink', label: 'Rose', icon: '🩷' },
+                    { value: 'yellow', label: 'Jaune', icon: '🟡' },
+                    { value: 'purple', label: 'Violet', icon: '🟣' },
+                    { value: 'orange', label: 'Orange', icon: '🟠' },
+                ],
+            },
+            {
+                id: 'favoriteAnimals',
+                title: 'Quels animaux aime-t-il/elle ?',
+                type: 'multiple',
+                options: [
+                    { value: 'cat', label: 'Chat', icon: '🐱' },
+                    { value: 'dog', label: 'Chien', icon: '🐕' },
+                    { value: 'rabbit', label: 'Lapin', icon: '🐰' },
+                    { value: 'bird', label: 'Oiseau', icon: '🐦' },
+                    { value: 'fish', label: 'Poisson', icon: '🐟' },
+                    { value: 'horse', label: 'Cheval', icon: '🐴' },
+                ],
+            },
+            {
+                id: 'sounds',
+                title: 'Sensibilité aux sons ?',
+                type: 'single',
+                options: [
+                    { value: 'low', label: 'Faible', icon: '🔈' },
+                    { value: 'medium', label: 'Moyenne', icon: '🔉' },
+                    { value: 'high', label: 'Élevée', icon: '🔊' },
+                ],
+            },
+            {
+                id: 'lights',
+                title: 'Sensibilité aux lumières ?',
+                type: 'single',
+                options: [
+                    { value: 'low', label: 'Faible', icon: '🌙' },
+                    { value: 'medium', label: 'Moyenne', icon: '☀️' },
+                    { value: 'high', label: 'Élevée', icon: '💡' },
+                ],
+            },
+            {
+                id: 'preferredActivities',
+                title: 'Quelles activités préfère-t-il/elle ?',
+                type: 'multiple',
+                options: [
+                    { value: 'drawing', label: 'Dessin', icon: '🎨' },
+                    { value: 'music', label: 'Musique', icon: '🎵' },
+                    { value: 'puzzles', label: 'Puzzles', icon: '🧩' },
+                    { value: 'reading', label: 'Lecture', icon: '📚' },
+                    { value: 'games', label: 'Jeux', icon: '🎮' },
+                    { value: 'nature', label: 'Nature', icon: '🌿' },
+                ],
+            },
+            {
+                id: 'theme',
+                title: 'Quel thème pour son espace ?',
+                type: 'single',
+                options: [
+                    { value: 'sky', label: 'Ciel', icon: '☁️' },
+                    { value: 'nature', label: 'Nature', icon: '🌲' },
+                    { value: 'sunset', label: 'Coucher de soleil', icon: '🌅' },
+                    { value: 'calm', label: 'Calme', icon: '🌊' },
+                ],
+            },
+        ];
+
+        // État de l'application
+        let currentStep = 0;
+        let answers = {
+            name: '',
+            age: 8,
+            favoriteColors: [],
+            favoriteAnimals: [],
+            sensitivities: { sounds: 'medium', lights: 'medium', colors: 'medium' },
+            preferredActivities: [],
+            theme: 'calm',
+        };
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            initBubbles();
+            updateQuestion();
+            setupEventListeners();
+        });
+
+        // Créer les bulles flottantes
+        function initBubbles() {
+            const container = document.getElementById('bubbles-container');
+            const colors = [
+                'hsl(200, 70%, 55%)',
+                'hsl(160, 50%, 55%)',
+                'hsl(270, 50%, 70%)',
+                'hsl(20, 80%, 70%)',
+                'hsl(45, 90%, 65%)',
+            ];
+
+            for (let i = 0; i < 8; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                
+                const size = Math.random() * 150 + 50;
+                const x = Math.random() * 100;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const duration = Math.random() * 10 + 15;
+                const delay = Math.random() * 5;
+                
+                bubble.style.width = `${size}px`;
+                bubble.style.height = `${size}px`;
+                bubble.style.left = `${x}%`;
+                bubble.style.top = `${Math.random() * 100}%`;
+                bubble.style.background = color;
+                bubble.style.opacity = '0.15';
+                bubble.style.animation = `float ${duration}s linear ${delay}s infinite`;
+                
+                container.appendChild(bubble);
+            }
+
+            // Ajouter l'animation CSS
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes float {
+                    0% {
+                        transform: translateY(110vh) rotate(0deg);
+                    }
+                    100% {
+                        transform: translateY(-20vh) rotate(360deg);
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        // Mettre à jour l'affichage de la question
+        function updateQuestion() {
+            const currentQuestion = questions[currentStep];
+            const progress = ((currentStep + 1) / questions.length) * 100;
+            
+            // Mettre à jour la barre de progression
+            document.getElementById('current-question').textContent = currentStep + 1;
+            document.getElementById('total-questions').textContent = questions.length;
+            document.getElementById('progress-percentage').textContent = `${Math.round(progress)}%`;
+            document.getElementById('progress-fill').style.width = `${progress}%`;
+            
+            // Mettre à jour le titre
+            document.getElementById('question-title').textContent = currentQuestion.title;
+            
+            // Mettre à jour le bouton précédent
+            document.getElementById('prev-btn').disabled = currentStep === 0;
+            
+            // Mettre à jour le bouton suivant
+            const nextBtn = document.getElementById('next-btn');
+            nextBtn.innerHTML = currentStep === questions.length - 1 
+                ? 'Terminer <i class="fas fa-check"></i>' 
+                : 'Suivant <i class="fas fa-arrow-right"></i>';
+            
+            // Générer le contenu de la question
+            const contentDiv = document.getElementById('question-content');
+            contentDiv.innerHTML = '';
+            
+            if (currentQuestion.id === 'name') {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'text-input';
+                input.id = 'name-input';
+                input.placeholder = 'Prénom de l\'enfant';
+                input.value = answers.name;
+                input.autofocus = true;
+                input.addEventListener('input', (e) => {
+                    answers.name = e.target.value;
+                });
+                contentDiv.appendChild(input);
+            }
+            else if (currentQuestion.type === 'slider') {
+                const container = document.createElement('div');
+                container.className = 'slider-container';
+                
+                const valueDiv = document.createElement('div');
+                valueDiv.className = 'slider-value';
+                valueDiv.innerHTML = `${answers.age} <span>ans</span>`;
+                
+                const slider = document.createElement('input');
+                slider.type = 'range';
+                slider.className = 'slider';
+                slider.min = currentQuestion.min;
+                slider.max = currentQuestion.max;
+                slider.value = answers.age;
+                
+                slider.addEventListener('input', (e) => {
+                    answers.age = parseInt(e.target.value);
+                    valueDiv.innerHTML = `${answers.age} <span>ans</span>`;
+                });
+                
+                container.appendChild(valueDiv);
+                container.appendChild(slider);
+                contentDiv.appendChild(container);
+            }
+            else if (currentQuestion.options && currentQuestion.options.length > 0) {
+                const grid = document.createElement('div');
+                grid.className = 'options-grid';
+                
+                currentQuestion.options.forEach(option => {
+                    const button = document.createElement('button');
+                    button.className = 'option-btn';
+                    button.type = 'button';
+                    
+                    // Vérifier si l'option est sélectionnée
+                    let isSelected = false;
+                    if (currentQuestion.type === 'multiple') {
+                        isSelected = answers[currentQuestion.id]?.includes(option.value);
+                    } else if (currentQuestion.id === 'sounds' || currentQuestion.id === 'lights') {
+                        isSelected = answers.sensitivities[currentQuestion.id] === option.value;
+                    } else {
+                        isSelected = answers[currentQuestion.id] === option.value;
+                    }
+                    
+                    if (isSelected) {
+                        button.classList.add('selected');
+                    }
+                    
+                    const iconSpan = document.createElement('span');
+                    iconSpan.className = 'option-icon';
+                    iconSpan.textContent = option.icon;
+                    
+                    const labelSpan = document.createElement('span');
+                    labelSpan.className = 'option-label';
+                    labelSpan.textContent = option.label;
+                    
+                    button.appendChild(iconSpan);
+                    button.appendChild(labelSpan);
+                    
+                    if (isSelected) {
+                        const checkIcon = document.createElement('i');
+                        checkIcon.className = 'fas fa-check check-icon';
+                        button.appendChild(checkIcon);
+                    }
+                    
+                    button.addEventListener('click', () => {
+                        handleOptionClick(option.value, currentQuestion);
+                        updateQuestion(); // Re-render pour mettre à jour les sélections
+                    });
+                    
+                    grid.appendChild(button);
+                });
+                
+                contentDiv.appendChild(grid);
+            }
+        }
+
+        // Gérer le clic sur une option
+        function handleOptionClick(value, question) {
+            if (question.type === 'multiple') {
+                const current = answers[question.id] || [];
+                if (current.includes(value)) {
+                    answers[question.id] = current.filter(v => v !== value);
+                } else {
+                    answers[question.id] = [...current, value];
+                }
+            } else if (question.id === 'sounds' || question.id === 'lights') {
+                answers.sensitivities[question.id] = value;
+            } else {
+                answers[question.id] = value;
+            }
+        }
+
+        // Configuration des écouteurs d'événements
+        function setupEventListeners() {
+            // Bouton de lecture vocale
+            document.getElementById('speak-btn').addEventListener('click', () => {
+                speakText(questions[currentStep].title);
+            });
+            
+            // Bouton précédent
+            document.getElementById('prev-btn').addEventListener('click', () => {
+                if (currentStep > 0) {
+                    currentStep--;
+                    updateQuestion();
+                }
+            });
+            
+            // Bouton suivant
+            document.getElementById('next-btn').addEventListener('click', () => {
+                if (currentStep < questions.length - 1) {
+                    currentStep++;
+                    updateQuestion();
+                } else {
+                    completeQuestionnaire();
+                }
+            });
+            
+            // Entrée pour passer à la question suivante
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && questions[currentStep].id === 'name' && answers.name.trim()) {
+                    e.preventDefault();
+                    if (currentStep < questions.length - 1) {
+                        currentStep++;
+                        updateQuestion();
+                    }
+                }
+            });
+        }
+
+        // Synthèse vocale
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'fr-FR';
+                utterance.rate = 0.9;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Terminer le questionnaire
+        function completeQuestionnaire() {
+            // Créer le profil
+            const profile = {
+                id: Date.now().toString(),
+                name: answers.name,
+                age: answers.age,
+                favoriteColors: answers.favoriteColors,
+                favoriteAnimals: answers.favoriteAnimals,
+                favoriteCartoons: [],
+                sensitivities: answers.sensitivities,
+                preferredMusic: [],
+                preferredActivities: answers.preferredActivities,
+                languageLevel: 'intermediate',
+                theme: answers.theme || 'calm',
+            };
+            
+            // Sauvegarder dans localStorage
+            localStorage.setItem('childProfile', JSON.stringify(profile));
+            
+            // Afficher le toast de succès
+            const toast = document.getElementById('success-toast');
+            toast.classList.add('show');
+            
+            // Simuler la redirection
+            setTimeout(() => {
+                alert('Questionnaire terminé ! Profil sauvegardé.\n\nRésumé du profil:\n' +
+                      `Nom: ${profile.name}\n` +
+                      `Âge: ${profile.age} ans\n` +
+                      `Couleurs préférées: ${profile.favoriteColors.join(', ') || 'Aucune'}\n` +
+                      `Animaux préférés: ${profile.favoriteAnimals.join(', ') || 'Aucun'}\n` +
+                      `Sensibilité sons: ${profile.sensitivities.sounds}\n` +
+                      `Sensibilité lumières: ${profile.sensitivities.lights}\n` +
+                      `Activités préférées: ${profile.preferredActivities.join(', ') || 'Aucune'}\n` +
+                      `Thème: ${profile.theme}`);
+                
+                toast.classList.remove('show');
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

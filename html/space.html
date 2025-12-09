@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace Enfant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #4a6fa5;
+            --primary-foreground: #ffffff;
+            --primary-hover: #3a5a8c;
+            --secondary: #6c757d;
+            --background: #f8f9fa;
+            --foreground: #1a1a1a;
+            --card: #ffffff;
+            --border: #e0e0e0;
+            --muted: #f1f5f9;
+            --muted-foreground: #64748b;
+            --lavender-light: rgba(157, 141, 241, 0.1);
+            --lavender: #9d8df1;
+            --peach-light: rgba(255, 184, 161, 0.1);
+            --peach: #ffb8a1;
+            --mint-light: rgba(136, 217, 230, 0.1);
+            --mint: #88d9e6;
+            --pink-100: #fce7f3;
+            --pink-400: #f472b6;
+            --sunshine-light: rgba(255, 209, 102, 0.1);
+            --sunshine: #ffd166;
+            --calm-blue-light: rgba(59, 130, 246, 0.1);
+            --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-medium: 0 8px 24px rgba(0, 0, 0, 0.12);
+            --shadow-glow: 0 8px 32px rgba(74, 111, 165, 0.2);
+            --border-radius: 1rem;
+            --border-radius-lg: 1.5rem;
+            --border-radius-xl: 2rem;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            color: var(--foreground);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .greeting-emoji {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+            display: block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--foreground);
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.25rem;
+            color: var(--secondary);
+        }
+
+        /* Grille d'activités */
+        .activities-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .activities-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 1.5rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .activities-grid {
+                gap: 2rem;
+            }
+        }
+
+        /* Carte d'activité */
+        .activity-card {
+            background-color: var(--card);
+            border-radius: var(--border-radius-xl);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-soft);
+            border: 2px solid var(--border);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            height: 100%;
+            animation: slideUp 0.5s ease;
+            animation-fill-mode: both;
+        }
+
+        .activity-card:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-glow);
+            text-decoration: none;
+        }
+
+        .activity-card:hover .activity-emoji {
+            transform: scale(1.2) rotate(10deg);
+        }
+
+        .activity-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 1rem;
+        }
+
+        .activity-emoji {
+            font-size: 3rem;
+            transition: all 0.3s ease;
+        }
+
+        @media (min-width: 768px) {
+            .activity-emoji {
+                font-size: 4rem;
+            }
+        }
+
+        .activity-info {
+            width: 100%;
+        }
+
+        .activity-label {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--foreground);
+            margin-bottom: 0.25rem;
+        }
+
+        @media (min-width: 768px) {
+            .activity-label {
+                font-size: 1.5rem;
+            }
+        }
+
+        .activity-description {
+            font-size: 0.875rem;
+            color: var(--muted-foreground);
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            .activity-description {
+                display: block;
+            }
+        }
+
+        /* Liens */
+        .back-link {
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .back-link a {
+            color: var(--secondary);
+            text-decoration: none;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .back-link a:hover {
+            color: var(--primary);
+        }
+
+        .back-link-emoji {
+            font-size: 1.25rem;
+        }
+
+        /* Profil */
+        .profile-info {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: var(--muted);
+            border-radius: var(--border-radius-lg);
+            max-width: 24rem;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .profile-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        /* Animations CSS */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Classes de couleurs pour les activités */
+        .activity-relax {
+            background-color: var(--lavender-light);
+            border-color: var(--lavender);
+        }
+
+        .activity-draw {
+            background-color: var(--peach-light);
+            border-color: var(--peach);
+        }
+
+        .activity-games {
+            background-color: var(--mint-light);
+            border-color: var(--mint);
+        }
+
+        .activity-journal {
+            background-color: var(--pink-100);
+            border-color: var(--pink-400);
+        }
+
+        .activity-gallery {
+            background-color: var(--sunshine-light);
+            border-color: var(--sunshine);
+        }
+
+        .activity-cartoons {
+            background-color: var(--calm-blue-light);
+            border-color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- En-tête de bienvenue -->
+        <div class="header">
+            <span class="greeting-emoji" id="greeting-emoji">🌅</span>
+            <h1 id="greeting-text">Bonjour, Ami !</h1>
+            <p>Que veux-tu faire aujourd'hui ?</p>
+        </div>
+
+        <!-- Informations du profil -->
+        <div class="profile-info" id="profile-info">
+            <!-- Le profil sera chargé dynamiquement -->
+        </div>
+
+        <!-- Grille d'activités -->
+        <div class="activities-grid" id="activities-grid">
+            <!-- Les activités seront générées par JavaScript -->
+        </div>
+
+        <!-- Lien retour -->
+        <div class="back-link">
+            <a href="#" onclick="goToSpaceSelection(event)">
+                <span class="back-link-emoji">🔄</span>
+                Changer d'espace
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Données des activités
+        const activities = [
+            { 
+                path: 'relax.html', 
+                label: 'Se Calmer', 
+                emoji: '🌊',
+                colorClass: 'activity-relax',
+                description: 'Respirer et se détendre'
+            },
+            { 
+                path: 'draw.html', 
+                label: 'Dessiner', 
+                emoji: '🎨',
+                colorClass: 'activity-draw',
+                description: 'Créer de beaux dessins'
+            },
+            { 
+                path: 'games.html', 
+                label: 'Jouer', 
+                emoji: '🎮',
+                colorClass: 'activity-games',
+                description: 'Puzzles et jeux'
+            },
+            { 
+                path: 'journal.html', 
+                label: 'Journal', 
+                emoji: '📔',
+                colorClass: 'activity-journal',
+                description: 'Comment je me sens'
+            },
+            { 
+                path: 'gallery.html', 
+                label: 'Galerie', 
+                emoji: '🖼️',
+                colorClass: 'activity-gallery',
+                description: 'Mes créations'
+            },
+            { 
+                path: 'cartoons.html', 
+                label: 'Dessins animés', 
+                emoji: '📺',
+                colorClass: 'activity-cartoons',
+                description: 'Regarder des vidéos'
+            },
+        ];
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            updateGreeting();
+            loadProfile();
+            renderActivities();
+        });
+
+        // Mettre à jour le message de bienvenue selon l'heure
+        function updateGreeting() {
+            const hour = new Date().getHours();
+            let greeting = { text: 'Bonjour', emoji: '🌅' };
+            
+            if (hour < 12) {
+                greeting = { text: 'Bonjour', emoji: '🌅' };
+            } else if (hour < 18) {
+                greeting = { text: 'Bon après-midi', emoji: '☀️' };
+            } else {
+                greeting = { text: 'Bonsoir', emoji: '🌙' };
+            }
+            
+            document.getElementById('greeting-text').textContent = greeting.text;
+            document.getElementById('greeting-emoji').textContent = greeting.emoji;
+        }
+
+        // Charger le profil
+        function loadProfile() {
+            const profileInfo = document.getElementById('profile-info');
+            
+            // Vérifier si un profil existe
+            const profile = getProfile();
+            
+            if (profile && profile.name) {
+                // Mettre à jour le message de bienvenue avec le nom
+                const greetingText = document.getElementById('greeting-text');
+                const hour = new Date().getHours();
+                let greeting = 'Bonjour';
+                
+                if (hour < 12) greeting = 'Bonjour';
+                else if (hour < 18) greeting = 'Bon après-midi';
+                else greeting = 'Bonsoir';
+                
+                greetingText.textContent = `${greeting}, ${profile.name} !`;
+                
+                // Afficher les infos du profil
+                profileInfo.innerHTML = `
+                    <div class="profile-name">${profile.name}, ${profile.age} ans</div>
+                    <div style="font-size: 0.875rem; color: var(--muted-foreground); margin-top: 0.25rem;">
+                        Couleurs préférées: ${profile.favoriteColors?.join(', ') || 'Aucune'}
+                    </div>
+                `;
+            } else {
+                profileInfo.style.display = 'none';
+            }
+        }
+
+        // Obtenir le profil depuis localStorage
+        function getProfile() {
+            const profileJson = localStorage.getItem('childProfile');
+            if (profileJson) {
+                try {
+                    return JSON.parse(profileJson);
+                } catch (e) {
+                    return null;
+                }
+            }
+            return null;
+        }
+
+        // Afficher les activités
+        function renderActivities() {
+            const activitiesGrid = document.getElementById('activities-grid');
+            
+            activitiesGrid.innerHTML = activities.map((activity, index) => `
+                <a href="${activity.path}" class="activity-card ${activity.colorClass}" 
+                   style="animation-delay: ${index * 0.1}s">
+                    <div class="activity-content">
+                        <span class="activity-emoji">${activity.emoji}</span>
+                        <div class="activity-info">
+                            <div class="activity-label">${activity.label}</div>
+                            <div class="activity-description">${activity.description}</div>
+                        </div>
+                    </div>
+                </a>
+            `).join('');
+        }
+
+        // Aller à la sélection d'espace
+        function goToSpaceSelection(event) {
+            event.preventDefault();
+            
+            // Afficher un message de transition
+            alert('Fonctionnalité de sélection d\'espace à implémenter\n\nDans une application complète, ce bouton permettrait de retourner au choix du type d\'espace (parent, éducateur, enfant).\n\nPour le moment, continuez à explorer l\'espace enfant !');
+            
+            // Dans une vraie application, rediriger vers choose-space.html
+            // window.location.href = 'choose-space.html';
+        }
+
+        // Gérer la réduction des mouvements
+        function toggleMotionReduction() {
+            const shouldReduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            
+            if (shouldReduceMotion) {
+                // Désactiver les animations CSS
+                const style = document.createElement('style');
+                style.textContent = `
+                    .greeting-emoji,
+                    .activity-card,
+                    .activity-emoji {
+                        animation: none !important;
+                        transition: none !important;
+                    }
+                    
+                    .activity-card:hover .activity-emoji {
+                        transform: none !important;
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+
+        // Vérifier les préférences de mouvement
+        toggleMotionReduction();
+        
+        // Écouter les changements de préférences
+        window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', toggleMotionReduction);
+
+        // Ajouter un effet de clic sur les cartes
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.activity-card')) {
+                const card = e.target.closest('.activity-card');
+                card.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    card.style.transform = '';
+                }, 150);
+            }
+        });
+
+        // Ajouter un chargement progressif
+        window.addEventListener('load', function() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease';
+            
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 100);
+        });
+    </script>
+</body>
+</html>

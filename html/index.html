@@ -1,12 +1,623 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>oumaima said </title>
-    <p>hhhhh</p>
+    <title>MonEspace - Un espace bienveillant pour les enfants</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&display=swap');
+
+        :root {
+            --background: hsl(200, 30%, 98%);
+            --foreground: hsl(220, 25%, 25%);
+            --card: hsl(0, 0%, 100%);
+            --card-foreground: hsl(220, 25%, 25%);
+            --primary: hsl(200, 70%, 55%);
+            --primary-foreground: hsl(0, 0%, 100%);
+            --secondary: hsl(160, 40%, 92%);
+            --secondary-foreground: hsl(160, 40%, 35%);
+            --muted: hsl(40, 30%, 96%);
+            --muted-foreground: hsl(220, 15%, 50%);
+            --accent: hsl(270, 50%, 92%);
+            --accent-foreground: hsl(270, 40%, 40%);
+            --border: hsl(200, 20%, 88%);
+            --calm-blue: hsl(200, 70%, 55%);
+            --calm-blue-light: hsl(200, 70%, 92%);
+            --mint-green: hsl(160, 50%, 55%);
+            --mint-green-light: hsl(160, 50%, 92%);
+            --lavender: hsl(270, 50%, 70%);
+            --lavender-light: hsl(270, 50%, 95%);
+            --peach: hsl(20, 80%, 70%);
+            --peach-light: hsl(20, 80%, 95%);
+            --sunshine: hsl(45, 90%, 65%);
+            --sunshine-light: hsl(45, 90%, 95%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, var(--calm-blue-light) 0%, var(--lavender-light) 50%, var(--mint-green-light) 100%);
+            color: var(--foreground);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(200, 215, 230, 0.5);
+        }
+
+        .navbar-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: var(--foreground);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--lavender));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            transition: transform 0.3s;
+        }
+
+        .logo-icon:hover {
+            transform: scale(1.05);
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 1.125rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--foreground);
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: var(--secondary);
+            color: var(--secondary-foreground);
+        }
+
+        .btn-auth {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1.25rem;
+            border-radius: 12px;
+            background: var(--primary);
+            color: var(--primary-foreground);
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .btn-auth:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        /* Floating Bubbles */
+        .bubbles {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            animation: float-up linear infinite;
+        }
+
+        @keyframes float-up {
+            from {
+                transform: translateY(110vh);
+            }
+            to {
+                transform: translateY(-20vh);
+            }
+        }
+
+        /* Main Content */
+        .main-content {
+            padding-top: 96px;
+            padding-bottom: 64px;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .container {
+            max-width: 1024px;
+            margin: 0 auto;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 3rem;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        .hero-emoji {
+            font-size: 4rem;
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--foreground);
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--muted-foreground);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(200, 215, 230, 0.5);
+            transition: all 0.3s;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .card:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            border-color: rgba(90, 155, 203, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .card-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 1.75rem;
+        }
+
+        .icon-peach {
+            background: var(--peach-light);
+            color: var(--peach);
+        }
+
+        .icon-mint {
+            background: var(--mint-green-light);
+            color: var(--mint-green);
+        }
+
+        .icon-lavender {
+            background: var(--lavender-light);
+            color: var(--lavender);
+        }
+
+        .card-content h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--foreground);
+        }
+
+        .card-content p {
+            color: var(--muted-foreground);
+            line-height: 1.8;
+        }
+
+        /* Icons (SVG replacements) */
+        .icon {
+            width: 28px;
+            height: 28px;
+            display: inline-block;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.125rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .card-icon {
+                width: 48px;
+                height: 48px;
+            }
+        }
+
+        /* Mobile Menu */
+        .mobile-menu {
+            display: none;
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem;
+        }
+
+        .mobile-menu.active {
+            display: block;
+        }
+
+        .mobile-nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--foreground);
+            margin-bottom: 0.5rem;
+            transition: all 0.3s;
+        }
+
+        .mobile-nav-link:hover, .mobile-nav-link.active {
+            background: var(--secondary);
+        }
+
+        /* Page-specific styles */
+        .home-page {
+            text-align: center;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: var(--card);
+            border-radius: 24px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+    </style>
 </head>
 <body>
-    
+    <!-- Floating Bubbles -->
+    <div class="bubbles" id="bubbles"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="#home" class="logo" onclick="showPage('home')">
+                <div class="logo-icon">🌈</div>
+                <span class="logo-text">MonEspace</span>
+            </a>
+
+            <div class="nav-links">
+                <a href="#home" class="nav-link active" onclick="showPage('home')">
+                    <span>🏠</span>
+                    <span>Accueil</span>
+                </a>
+                <a href="#about" class="nav-link" onclick="showPage('about')">
+                    <span>ℹ️</span>
+                    <span>À propos</span>
+                </a>
+                <a href="#contact" class="nav-link" onclick="showPage('contact')">
+                    <span>✉️</span>
+                    <span>Contact</span>
+                </a>
+            </div>
+
+            <a href="page1.html" class="mobile-nav-link btn-auth">
+                <span>🔐</span>
+                <span>Connexion</span>
+            </a>
+
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <span id="menuIcon">☰</span>
+            </button>
+        </div>
+
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="#home" class="mobile-nav-link active" onclick="showPage('home'); toggleMobileMenu()">
+                <span>🏠</span>
+                <span>Accueil</span>
+            </a>
+            <a href="#about" class="mobile-nav-link" onclick="showPage('about'); toggleMobileMenu()">
+                <span>ℹ️</span>
+                <span>À propos</span>
+            </a>
+            <a href="#contact" class="mobile-nav-link" onclick="showPage('contact'); toggleMobileMenu()">
+                <span>✉️</span>
+                <span>Contact</span>
+            </a>
+            <a href="page1.html" class="mobile-nav-link btn-auth">
+                <span>🔐</span>
+                <span>Connexion</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Home Page -->
+        <div id="homePage" class="container page-content">
+            <div class="hero">
+                <span class="hero-emoji">🌈</span>
+                <h1 class="hero-title">Bienvenue sur MonEspace</h1>
+                <p class="hero-subtitle">Un environnement numérique bienveillant et adapté pour tous les enfants</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎨</div>
+                    <h3>Personnalisable</h3>
+                    <p>Adaptez l'interface selon les besoins sensoriels de votre enfant</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Sécurisé</h3>
+                    <p>Un environnement sûr et protégé pour explorer en toute tranquillité</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">♿</div>
+                    <h3>Accessible</h3>
+                    <p>Conçu avec des options d'accessibilité complètes</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💚</div>
+                    <h3>Bienveillant</h3>
+                    <p>Une approche douce et respectueuse du rythme de chacun</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- About Page -->
+        <div id="aboutPage" class="container page-content" style="display: none;">
+            <div class="hero">
+                <span class="hero-emoji">🌈</span>
+                <h1 class="hero-title">À propos de MonEspace</h1>
+                <p class="hero-subtitle">Un espace numérique bienveillant pour les enfants avec autisme</p>
+            </div>
+
+            <div class="cards-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon icon-peach">❤️</div>
+                        <div class="card-content">
+                            <h2>Notre mission</h2>
+                            <p>Créer un environnement numérique adapté et apaisant où chaque enfant peut s'épanouir à son rythme, avec des outils personnalisés selon ses besoins sensoriels et ses préférences.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon icon-mint">🛡️</div>
+                        <div class="card-content">
+                            <h2>Sécurité & Confidentialité</h2>
+                            <p>La sécurité de vos enfants est notre priorité. Aucune donnée personnelle n'est partagée, et toutes les interactions sont conçues pour être sûres et adaptées.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon icon-lavender">✨</div>
+                        <div class="card-content">
+                            <h2>Accessibilité</h2>
+                            <p>Options d'adaptation sensorielle, réduction des animations, mode contraste élevé, et lecture vocale pour répondre aux besoins de chaque enfant.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Page -->
+        <div id="contactPage" class="container page-content" style="display: none;">
+            <div class="hero">
+                <span class="hero-emoji">📧</span>
+                <h1 class="hero-title">Contactez-nous</h1>
+                <p class="hero-subtitle">Nous sommes là pour vous aider</p>
+            </div>
+
+            <div class="card" style="max-width: 600px; margin: 0 auto;">
+                <div class="card-content">
+                    <h2 style="margin-bottom: 1.5rem;">Envoyez-nous un message</h2>
+                    <form style="display: flex; flex-direction: column; gap: 1.25rem;">
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Nom</label>
+                            <input type="text" placeholder="Votre nom" style="width: 100%; padding: 0.75rem; border-radius: 12px; border: 1px solid var(--border); font-family: inherit; font-size: 1rem;">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Email</label>
+                            <input type="email" placeholder="votre@email.com" style="width: 100%; padding: 0.75rem; border-radius: 12px; border: 1px solid var(--border); font-family: inherit; font-size: 1rem;">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Message</label>
+                            <textarea placeholder="Votre message..." rows="5" style="width: 100%; padding: 0.75rem; border-radius: 12px; border: 1px solid var(--border); font-family: inherit; font-size: 1rem; resize: vertical;"></textarea>
+                        </div>
+                        <button type="submit" class="btn-auth" style="width: 100%; justify-content: center;">
+                            <span>📤</span>
+                            <span>Envoyer le message</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Generate floating bubbles
+        function createBubbles() {
+            const bubblesContainer = document.getElementById('bubbles');
+            const colors = [
+                'rgba(90, 155, 203, 0.15)',
+                'rgba(102, 194, 165, 0.15)',
+                'rgba(149, 125, 173, 0.15)',
+                'rgba(230, 126, 97, 0.12)',
+                'rgba(242, 201, 76, 0.12)'
+            ];
+
+            for (let i = 0; i < 8; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                const size = Math.random() * 150 + 50;
+                bubble.style.width = size + 'px';
+                bubble.style.height = size + 'px';
+                bubble.style.left = Math.random() * 100 + '%';
+                bubble.style.background = colors[Math.floor(Math.random() * colors.length)];
+                bubble.style.animationDuration = (Math.random() * 10 + 15) + 's';
+                bubble.style.animationDelay = Math.random() * 5 + 's';
+                bubblesContainer.appendChild(bubble);
+            }
+        }
+
+        // Toggle mobile menu
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            const icon = document.getElementById('menuIcon');
+            menu.classList.toggle('active');
+            icon.textContent = menu.classList.contains('active') ? '✕' : '☰';
+        }
+
+        // Show page
+        function showPage(pageName) {
+            const pages = ['home', 'about', 'contact'];
+            pages.forEach(page => {
+                const pageElement = document.getElementById(page + 'Page');
+                if (pageElement) {
+                    pageElement.style.display = page === pageName ? 'block' : 'none';
+                }
+            });
+
+            // Update active nav links
+            document.querySelectorAll('.nav-link, .mobile-nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + pageName) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        // Initialize
+        createBubbles();
+    </script>
 </body>
 </html>

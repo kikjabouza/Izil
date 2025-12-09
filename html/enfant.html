@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace Enfant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Welcome Section */
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        .greeting-emoji {
+            font-size: 80px;
+            display: inline-block;
+            animation: float 2s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+
+        .welcome-title {
+            font-size: 48px;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .welcome-subtitle {
+            font-size: 24px;
+            color: rgba(255,255,255,0.9);
+        }
+
+        /* Activities Grid */
+        .activities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .activity-card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .activity-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.1;
+            z-index: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .activity-card:hover {
+            transform: scale(1.05) translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+        }
+
+        .activity-card:hover::before {
+            opacity: 0.2;
+        }
+
+        /* Color variants */
+        .activity-card.lavender {
+            border-color: #b794f6;
+        }
+        .activity-card.lavender::before {
+            background: linear-gradient(135deg, #b794f6, #e0c3fc);
+        }
+
+        .activity-card.peach {
+            border-color: #ffa07a;
+        }
+        .activity-card.peach::before {
+            background: linear-gradient(135deg, #ffa07a, #ffd4a3);
+        }
+
+        .activity-card.mint {
+            border-color: #7bed9f;
+        }
+        .activity-card.mint::before {
+            background: linear-gradient(135deg, #7bed9f, #a8e6cf);
+        }
+
+        .activity-card.pink {
+            border-color: #ff6b9d;
+        }
+        .activity-card.pink::before {
+            background: linear-gradient(135deg, #ff6b9d, #ffa8cc);
+        }
+
+        .activity-card.sunshine {
+            border-color: #ffd93d;
+        }
+        .activity-card.sunshine::before {
+            background: linear-gradient(135deg, #ffd93d, #ffe66d);
+        }
+
+        .activity-card.blue {
+            border-color: #4facfe;
+        }
+        .activity-card.blue::before {
+            background: linear-gradient(135deg, #4facfe, #7dd3fc);
+        }
+
+        .activity-emoji {
+            font-size: 64px;
+            display: block;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .activity-card:hover .activity-emoji {
+            transform: scale(1.2) rotate(10deg);
+        }
+
+        .activity-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .activity-description {
+            font-size: 16px;
+            color: #666;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Back Link */
+        .back-link {
+            text-align: center;
+            margin-top: 40px;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .back-link a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            padding: 12px 24px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .back-link a:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .welcome-title {
+                font-size: 32px;
+            }
+
+            .welcome-subtitle {
+                font-size: 18px;
+            }
+
+            .greeting-emoji {
+                font-size: 60px;
+            }
+
+            .activities-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
+
+            .activity-card {
+                padding: 30px 20px;
+            }
+
+            .activity-emoji {
+                font-size: 48px;
+            }
+
+            .activity-title {
+                font-size: 22px;
+            }
+
+            .activity-description {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <div class="greeting-emoji" id="greetingEmoji">🌅</div>
+            <h1 class="welcome-title" id="greetingText">Bonjour, ami !</h1>
+            <p class="welcome-subtitle">Que veux-tu faire aujourd'hui ?</p>
+        </div>
+
+        <!-- Activities Grid -->
+        <div class="activities-grid">
+            <div class="activity-card lavender" onclick="goToActivity('relax')">
+                <span class="activity-emoji">🌊</span>
+                <h3 class="activity-title">Se Calmer</h3>
+                <p class="activity-description">Respirer et se détendre</p>
+            </div>
+
+            <div class="activity-card peach" onclick="goToActivity('draw')">
+                <span class="activity-emoji">🎨</span>
+                <h3 class="activity-title">Dessiner</h3>
+                <p class="activity-description">Créer de beaux dessins</p>
+            </div>
+
+            <div class="activity-card mint" onclick="goToActivity('games')">
+                <span class="activity-emoji">🎮</span>
+                <h3 class="activity-title">Jouer</h3>
+                <p class="activity-description">Puzzles et jeux</p>
+            </div>
+
+            <div class="activity-card pink" onclick="goToActivity('journal')">
+                <span class="activity-emoji">📔</span>
+                <h3 class="activity-title">Journal</h3>
+                <p class="activity-description">Comment je me sens</p>
+            </div>
+
+            <div class="activity-card sunshine" onclick="goToActivity('gallery')">
+                <span class="activity-emoji">🖼</span>
+                <h3 class="activity-title">Galerie</h3>
+                <p class="activity-description">Mes créations</p>
+            </div>
+
+            <div class="activity-card blue" onclick="goToActivity('cartoons')">
+                <span class="activity-emoji">📺</span>
+                <h3 class="activity-title">Dessins animés</h3>
+                <p class="activity-description">Regarder des vidéos</p>
+            </div>
+        </div>
+
+        <!-- Back Link -->
+        <div class="back-link">
+            <a href="#" onclick="goBack(); return false;">Changer d'espace</a>
+        </div>
+    </div>
+
+    <script>
+        // Get greeting based on time of day
+        function getGreeting() {
+            const hour = new Date().getHours();
+            if (hour < 12) {
+                return { text: 'Bonjour', emoji: '🌅' };
+            } else if (hour < 18) {
+                return { text: 'Bon après-midi', emoji: '☀' };
+            } else {
+                return { text: 'Bonsoir', emoji: '🌙' };
+            }
+        }
+
+        // Initialize greeting
+        function initGreeting() {
+            const greeting = getGreeting();
+            const profile = getProfile();
+            const name = profile ? profile.name : 'ami';
+            
+            document.getElementById('greetingEmoji').textContent = greeting.emoji;
+            document.getElementById('greetingText').textContent = ${greeting.text}, ${name} !;
+        }
+
+        // Get profile from localStorage
+        function getProfile() {
+            try {
+                const stored = localStorage.getItem('child-profile-storage');
+                if (stored) {
+                    const data = JSON.parse(stored);
+                    return data.state?.profile;
+                }
+            } catch (e) {
+                console.log('No profile found');
+            }
+            return null;
+        }
+
+        // Navigate to activity
+        function goToActivity(activity) {
+            console.log('Navigation vers:', activity);
+            alert(Navigation vers l'activité: ${activity});
+            // Dans une vraie application, vous utiliseriez:
+            // window.location.href = /child-space/${activity};
+        }
+
+        // Go back
+        function goBack() {
+            console.log('Retour au choix d\'espace');
+            alert('Retour au choix d\'espace');
+            // Dans une vraie application, vous utiliseriez:
+            // window.location.href = '/choose-space';
+        }
+
+        // Add stagger animation to cards
+        function animateCards() {
+            const cards = document.querySelectorAll('.activity-card');
+            cards.forEach((card, index) => {
+                card.style.animation = fadeIn 0.5s ease-out ${index * 0.1}s both;
+            });
+        }
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            initGreeting();
+            animateCards();
+        });
+    </script>
+</body>
+</html>

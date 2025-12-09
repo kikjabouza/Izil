@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Journal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #4a6fa5;
+            --primary-foreground: #ffffff;
+            --primary-hover: #3a5a8c;
+            --secondary: #6c757d;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --background: #f8f9fa;
+            --foreground: #1a1a1a;
+            --card: #ffffff;
+            --border: #e0e0e0;
+            --muted: #f1f5f9;
+            --muted-foreground: #64748b;
+            --sunshine-light: rgba(255, 209, 102, 0.2);
+            --calm-blue-light: rgba(59, 130, 246, 0.2);
+            --lavender-light: rgba(157, 141, 241, 0.2);
+            --peach-light: rgba(255, 184, 161, 0.2);
+            --mint-light: rgba(136, 217, 230, 0.2);
+            --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-medium: 0 8px 24px rgba(0, 0, 0, 0.12);
+            --shadow-glow: 0 8px 32px rgba(74, 111, 165, 0.2);
+            --border-radius: 1rem;
+            --border-radius-lg: 1.5rem;
+            --border-radius-xl: 2rem;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            color: var(--foreground);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .header-emoji {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            display: block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--foreground);
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: var(--secondary);
+        }
+
+        /* Grille principale */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* Carte */
+        .card {
+            background-color: var(--card);
+            border-radius: var(--border-radius-xl);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-glow);
+            border-color: rgba(74, 111, 165, 0.2);
+        }
+
+        .card-elevated {
+            box-shadow: var(--shadow-medium);
+        }
+
+        .card-calm {
+            box-shadow: var(--shadow-soft);
+            border-color: rgba(74, 111, 165, 0.2);
+        }
+
+        /* Titre de carte */
+        .card h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--foreground);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Sélecteur d'humeur */
+        .moods-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 640px) {
+            .moods-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .mood-btn {
+            padding: 1rem;
+            border-radius: var(--border-radius-lg);
+            border: 2px solid transparent;
+            background-color: var(--muted);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .mood-btn:hover {
+            transform: scale(1.1);
+            background-color: rgba(74, 111, 165, 0.1);
+        }
+
+        .mood-btn.selected {
+            background-color: var(--sunshine-light);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-glow);
+            transform: scale(1.05);
+        }
+
+        .mood-emoji {
+            font-size: 2.5rem;
+        }
+
+        .mood-label {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--foreground);
+        }
+
+        /* Zone de texte */
+        .note-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .note-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--foreground);
+            margin-bottom: 0.5rem;
+        }
+
+        .note-textarea {
+            width: 100%;
+            height: 6rem;
+            padding: 1rem;
+            border-radius: var(--border-radius-lg);
+            border: 2px solid var(--border);
+            background-color: var(--background);
+            font-size: 1rem;
+            resize: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .note-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Bouton microphone */
+        .mic-btn-container {
+            position: relative;
+        }
+
+        .mic-btn {
+            position: absolute;
+            bottom: 0.75rem;
+            right: 0.75rem;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            border: none;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mic-btn:hover {
+            background-color: var(--primary-hover);
+            transform: scale(1.1);
+        }
+
+        .mic-btn.recording {
+            background-color: var(--danger);
+            animation: pulse 1.5s infinite;
+        }
+
+        /* Bouton principal */
+        .save-btn {
+            width: 100%;
+            padding: 1rem;
+            border-radius: var(--border-radius-lg);
+            border: none;
+            background-color: var(--primary);
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .save-btn:hover {
+            background-color: var(--primary-hover);
+            transform: scale(1.02);
+            box-shadow: var(--shadow-glow);
+        }
+
+        /* Historique des humeurs */
+        .history-container {
+            max-height: 24rem;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .history-empty {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--secondary);
+        }
+
+        .history-emoji {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        /* Élément d'humeur */
+        .mood-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: var(--border-radius-lg);
+            background-color: var(--muted);
+            margin-bottom: 0.75rem;
+            animation: slideIn 0.3s ease;
+        }
+
+        .mood-item-emoji {
+            font-size: 2rem;
+        }
+
+        .mood-item-content {
+            flex: 1;
+        }
+
+        .mood-item-date {
+            font-size: 0.75rem;
+            color: var(--secondary);
+        }
+
+        .mood-item-note {
+            font-size: 0.875rem;
+            color: var(--foreground);
+            margin-top: 0.25rem;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background-color: var(--success);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-medium);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast-error {
+            background-color: var(--danger);
+        }
+
+        .toast-info {
+            background-color: var(--info);
+        }
+
+        .toast-emoji {
+            font-size: 1.25rem;
+        }
+
+        /* Animations CSS */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Scrollbar personnalisée */
+        .history-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .history-container::-webkit-scrollbar-track {
+            background: var(--muted);
+            border-radius: 3px;
+        }
+
+        .history-container::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 3px;
+        }
+
+        .history-container::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-hover);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- En-tête -->
+        <div class="header">
+            <span class="header-emoji">📔</span>
+            <h1>Mon Journal</h1>
+            <p>Comment te sens-tu aujourd'hui ?</p>
+        </div>
+
+        <!-- Grille principale -->
+        <div class="main-grid">
+            <!-- Sélecteur d'humeur -->
+            <div class="card card-elevated">
+                <h2>
+                    <span>📅</span>
+                    Mon humeur
+                </h2>
+
+                <div class="moods-grid" id="moods-grid">
+                    <!-- Les boutons d'humeur seront générés par JavaScript -->
+                </div>
+
+                <!-- Zone de note -->
+                <div class="note-container">
+                    <label class="note-label">
+                        Quelque chose à dire ? (facultatif)
+                    </label>
+                    <div class="mic-btn-container">
+                        <textarea 
+                            class="note-textarea" 
+                            id="note-textarea"
+                            placeholder="Écris ici ou enregistre un message vocal..."
+                        ></textarea>
+                        <button class="mic-btn" id="mic-btn">
+                            <span id="mic-icon">🎤</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Bouton d'enregistrement -->
+                <button class="save-btn" id="save-btn">
+                    <span>💾</span>
+                    Enregistrer
+                </button>
+            </div>
+
+            <!-- Historique des humeurs -->
+            <div class="card card-calm">
+                <h2>Mes dernières humeurs</h2>
+
+                <div class="history-container" id="history-container">
+                    <!-- Les humeurs seront générées par JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <span class="toast-emoji" id="toast-emoji">📝</span>
+        <span id="toast-message">Ton humeur a été enregistrée !</span>
+    </div>
+
+    <script>
+        // Données des humeurs
+        const moods = [
+            { emoji: '😊', label: 'Content', color: 'var(--sunshine-light)' },
+            { emoji: '😐', label: 'Normal', color: 'var(--muted)' },
+            { emoji: '😢', label: 'Triste', color: 'var(--calm-blue-light)' },
+            { emoji: '😠', label: 'Énervé', color: 'rgba(239, 68, 68, 0.2)' },
+            { emoji: '😴', label: 'Fatigué', color: 'var(--lavender-light)' },
+            { emoji: '🤗', label: 'Câlin', color: 'var(--peach-light)' },
+            { emoji: '😰', label: 'Inquiet', color: 'var(--muted)' },
+            { emoji: '🥳', label: 'Excité', color: 'var(--mint-light)' },
+        ];
+
+        // État de l'application
+        let selectedMood = null;
+        let isRecording = false;
+        let moodHistory = [];
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            loadMoodHistory();
+            setupMoodButtons();
+            setupEventListeners();
+        });
+
+        // Charger l'historique depuis localStorage
+        function loadMoodHistory() {
+            const savedMoods = localStorage.getItem('moodHistory');
+            if (savedMoods) {
+                moodHistory = JSON.parse(savedMoods);
+            }
+            renderMoodHistory();
+        }
+
+        // Sauvegarder l'historique dans localStorage
+        function saveMoodHistory() {
+            localStorage.setItem('moodHistory', JSON.stringify(moodHistory));
+        }
+
+        // Configurer les boutons d'humeur
+        function setupMoodButtons() {
+            const moodsGrid = document.getElementById('moods-grid');
+            moodsGrid.innerHTML = '';
+
+            moods.forEach(mood => {
+                const button = document.createElement('button');
+                button.className = 'mood-btn';
+                if (selectedMood === mood.emoji) {
+                    button.classList.add('selected');
+                    button.style.backgroundColor = mood.color;
+                }
+
+                button.innerHTML = `
+                    <span class="mood-emoji">${mood.emoji}</span>
+                    <span class="mood-label">${mood.label}</span>
+                `;
+
+                button.addEventListener('click', () => {
+                    selectedMood = mood.emoji;
+                    setupMoodButtons(); // Re-render pour mettre à jour la sélection
+                });
+
+                moodsGrid.appendChild(button);
+            });
+        }
+
+        // Configurer les écouteurs d'événements
+        function setupEventListeners() {
+            // Bouton d'enregistrement
+            document.getElementById('save-btn').addEventListener('click', saveMood);
+
+            // Bouton microphone
+            document.getElementById('mic-btn').addEventListener('click', toggleRecording);
+
+            // Entrée dans la zone de texte
+            document.getElementById('note-textarea').addEventListener('input', function() {
+                if (isRecording) {
+                    toggleRecording(); // Arrêter l'enregistrement si l'utilisateur tape
+                }
+            });
+        }
+
+        // Enregistrer l'humeur
+        function saveMood() {
+            if (!selectedMood) {
+                showToast('🤔 Choisis comment tu te sens !', 'error');
+                return;
+            }
+
+            const note = document.getElementById('note-textarea').value.trim();
+            const moodEntry = {
+                date: new Date().toISOString(),
+                mood: selectedMood,
+                note: note || undefined
+            };
+
+            // Ajouter à l'historique
+            moodHistory.push(moodEntry);
+            
+            // Sauvegarder
+            saveMoodHistory();
+            
+            // Mettre à jour l'affichage
+            renderMoodHistory();
+            
+            // Réinitialiser le formulaire
+            selectedMood = null;
+            document.getElementById('note-textarea').value = '';
+            setupMoodButtons();
+            
+            // Afficher le message de succès
+            showToast('📝 Ton humeur a été enregistrée !', 'success');
+        }
+
+        // Basculer l'enregistrement vocal
+        function toggleRecording() {
+            const micBtn = document.getElementById('mic-btn');
+            const micIcon = document.getElementById('mic-icon');
+            const textarea = document.getElementById('note-textarea');
+
+            if (!isRecording) {
+                // Démarrer l'enregistrement
+                isRecording = true;
+                micBtn.classList.add('recording');
+                micIcon.textContent = '⏹️';
+                showToast('🎙️ Enregistrement en cours...', 'info');
+                
+                // Simuler l'enregistrement (3 secondes)
+                setTimeout(() => {
+                    if (isRecording) {
+                        toggleRecording(); // Arrêter automatiquement
+                        textarea.value = textarea.value + ' [Message vocal] ';
+                        showToast('🎤 Message vocal enregistré !', 'success');
+                    }
+                }, 3000);
+            } else {
+                // Arrêter l'enregistrement
+                isRecording = false;
+                micBtn.classList.remove('recording');
+                micIcon.textContent = '🎤';
+            }
+        }
+
+        // Afficher l'historique des humeurs
+        function renderMoodHistory() {
+            const container = document.getElementById('history-container');
+            
+            if (moodHistory.length === 0) {
+                container.innerHTML = `
+                    <div class="history-empty">
+                        <span class="history-emoji">📝</span>
+                        <p>Pas encore d'humeurs enregistrées</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = '';
+            
+            // Afficher les 10 dernières humeurs (les plus récentes en premier)
+            const recentMoods = moodHistory.slice(-10).reverse();
+            
+            recentMoods.forEach((mood, index) => {
+                const moodElement = document.createElement('div');
+                moodElement.className = 'mood-item';
+                moodElement.style.animationDelay = `${index * 0.05}s`;
+
+                const date = new Date(mood.date);
+                const dateString = date.toLocaleDateString('fr-FR', {
+                    weekday: 'long',
+                    day: 'numeric',
+                    month: 'long',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                moodElement.innerHTML = `
+                    <span class="mood-item-emoji">${mood.mood}</span>
+                    <div class="mood-item-content">
+                        <div class="mood-item-date">${dateString}</div>
+                        ${mood.note ? `<div class="mood-item-note">${mood.note}</div>` : ''}
+                    </div>
+                `;
+
+                container.appendChild(moodElement);
+            });
+        }
+
+        // Afficher un toast
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastEmoji = document.getElementById('toast-emoji');
+            const toastMessage = document.getElementById('toast-message');
+
+            // Définir l'emoji selon le type
+            let emoji = '📝';
+            if (type === 'error') emoji = '🤔';
+            if (type === 'info') emoji = '🎙️';
+
+            toastEmoji.textContent = emoji;
+            toastMessage.textContent = message;
+            
+            // Appliquer la classe de type
+            toast.className = 'toast';
+            if (type === 'error') toast.classList.add('toast-error');
+            if (type === 'info') toast.classList.add('toast-info');
+            
+            // Afficher le toast
+            toast.classList.add('show');
+            
+            // Cacher le toast après 3 secondes
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Fonction pour formater la date
+        function formatDate(date) {
+            const today = new Date().toDateString();
+            const yesterday = new Date(Date.now() - 86400000).toDateString();
+            const moodDate = new Date(date).toDateString();
+
+            if (moodDate === today) return "Aujourd'hui";
+            if (moodDate === yesterday) return 'Hier';
+            
+            return new Date(date).toLocaleDateString('fr-FR', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long'
+            });
+        }
+    </script>
+</body>
+</html>
