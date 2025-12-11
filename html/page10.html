@@ -649,7 +649,7 @@
         <!-- Sélecteur de mode -->
         <div class="mode-switcher">
             <button class="mode-btn active" id="mode-free">
-                <span>🖌</span>
+                <span>🖌️</span>
                 Mode Libre
             </button>
             <button class="mode-btn" id="mode-game">
@@ -733,7 +733,7 @@
                             Gomme
                         </button>
                         <button class="action-btn" id="game-clear-btn">
-                            <span>🗑</span>
+                            <span>🗑️</span>
                             Effacer tout
                         </button>
                     </div>
@@ -769,13 +769,13 @@
                         <div class="level-info">Niveau <span id="current-level">1</span>/<span id="total-levels">7</span></div>
                         <div class="timer-container">
                             <div class="timer" id="game-timer">
-                                ⏱ <span id="timer-seconds">180</span> secondes
+                                ⏱️ <span id="timer-seconds">180</span> secondes
                             </div>
                         </div>
                     </div>
                     <div class="game-buttons">
                         <button class="action-btn" id="next-level-btn" disabled>
-                            <span>⏭</span>
+                            <span>⏭️</span>
                             Niveau suivant
                         </button>
                         <button class="action-btn" id="restart-game-btn">
@@ -801,7 +801,24 @@
         <span id="toast-message">Dessin sauvegardé !</span>
     </div>
 
-   
+    <!-- Musique de fond -->
+    <!-- Musique de fond -->
+<audio id="background-music" loop>
+    <source src="https://assets.mixkit.co/music/preview/mixkit-deep-urban-623.mp3" type="audio/mpeg">
+    Votre navigateur ne supporte pas l'élément audio.
+</audio>
+
+<!-- Contrôle volume discret (optionnel) -->
+<div class="volume-control" id="volume-control">
+    <button id="volume-toggle" title="Volume">🔊</button>
+    <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="0.2" title="Volume">
+</div>
+
+<!-- Contrôle volume discret (optionnel) -->
+<div class="volume-control" id="volume-control">
+    <button id="volume-toggle" title="Volume">🔊</button>
+    <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="0.2" title="Volume">
+</div>
 
     
 
@@ -825,7 +842,7 @@
             { value: 30, label: 'Grand' },
         ];
 
-        const stamps = ['🐱', '🐕', '🐰', '🌸', '⭐', '❤', '🌈', '🦋'];
+        const stamps = ['🐱', '🐕', '🐰', '🌸', '⭐', '❤️', '🌈', '🦋'];
 
         // Nouvelles images pour le mode jeu (en noir et blanc)
         const gameImages = [
@@ -1320,7 +1337,7 @@ function initBackgroundMusic() {
                         Gomme
                     </button>
                     <button class="action-btn" id="clear-btn">
-                        <span>🗑</span>
+                        <span>🗑️</span>
                         Effacer tout
                     </button>
                     <button class="action-btn primary" id="save-btn">
@@ -1341,7 +1358,7 @@ function initBackgroundMusic() {
             } else {
                 actionsGrid.innerHTML = `
                     <button class="action-btn" id="clear-game-btn">
-                        <span>🗑</span>
+                        <span>🗑️</span>
                         Effacer le coloriage
                     </button>
                 `;
@@ -1399,17 +1416,17 @@ function initBackgroundMusic() {
             if (currentStamp) {
                 toolPreview.className = 'tool-preview stamp';
                 toolPreview.textContent = currentStamp;
-                toolName.textContent = Tampon ${currentStamp};
+                toolName.textContent = `Tampon ${currentStamp}`;
             } else if (isEraser) {
                 toolPreview.className = 'tool-preview eraser';
                 toolPreview.textContent = '';
-                toolName.textContent = Gomme (${brushSize}px);
+                toolName.textContent = `Gomme (${brushSize}px)`;
             } else {
                 const colorName = colors.find(c => c.value === currentColor)?.name || 'Couleur';
                 toolPreview.className = 'tool-preview brush';
                 toolPreview.style.backgroundColor = currentColor;
                 toolPreview.textContent = '';
-                toolName.textContent = ${colorName} (${brushSize}px);
+                toolName.textContent = `${colorName} (${brushSize}px)`;
             }
         }
 
@@ -1439,7 +1456,7 @@ function initBackgroundMusic() {
 
         // Dessiner un tampon
         function drawStamp(x, y) {
-            ctx.font = ${brushSize * 4}px Arial;
+            ctx.font = `${brushSize * 4}px Arial`;
             ctx.fillStyle = currentColor;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
@@ -1549,7 +1566,7 @@ function initBackgroundMusic() {
         function downloadDrawing() {
             const dataUrl = canvas.toDataURL('image/png');
             const link = document.createElement('a');
-            link.download = dessin-${Date.now()}.png;
+            link.download = `dessin-${Date.now()}.png`;
             link.href = dataUrl;
             link.click();
             showToast('📥 Dessin téléchargé !');
@@ -1658,7 +1675,7 @@ function initBackgroundMusic() {
             // Démarrer le timer du jeu
             gameInterval = setInterval(updateGameTimer, 1000);
             
-            showToast(🎮 Niveau ${currentLevel + 1}: ${gameImages[currentLevel].name} - 180 secondes !);
+            showToast(`🎮 Niveau ${currentLevel + 1}: ${gameImages[currentLevel].name} - 180 secondes !`);
         }
 
         // Mettre à jour le timer du jeu
@@ -1790,8 +1807,11 @@ function initBackgroundMusic() {
             }, 3000);
         }
         
-      
+       // Initialiser la musique de fond (version simplifiée)
 
+// Variables pour la musique
+let backgroundMusic = null;
+let isMusicPlaying = true;
 </script>
 </body>
 </html>
