@@ -1474,7 +1474,7 @@
                 moodButtonsHTML += `
                     <button class="story-mood-btn ${isSelected ? 'selected' : ''}" 
                             data-mood="${mood.emoji}"
-                            style="${isSelected ? background-color: ${mood.color}; : ''}">
+                            style="${isSelected ? `background-color: ${mood.color};` : ''}">
                         <span class="story-mood-emoji">${mood.emoji}</span>
                         <span class="story-mood-label">${mood.label}</span>
                     </button>
@@ -1517,7 +1517,7 @@
             
             // Mettre à jour le compteur
             document.getElementById('story-counter').textContent = 
-                Histoire ${currentStoryIndex + 1} sur ${filteredStories.length};
+                `Histoire ${currentStoryIndex + 1} sur ${filteredStories.length}`;
             
             // Mettre à jour les boutons de navigation
             document.getElementById('prev-story').disabled = currentStoryIndex === 0;
@@ -1566,7 +1566,7 @@
                 return;
             }
             
-            const text = ${story.title}. ${story.content};
+            const text = `${story.title}. ${story.content}`;
             
             // Créer l'énoncé
             currentUtterance = new SpeechSynthesisUtterance(text);
@@ -1577,7 +1577,7 @@
             
             currentUtterance.onstart = function() {
                 isSpeaking = true;
-                buttonElement.innerHTML = '<span>⏹</span> Arrêter la lecture';
+                buttonElement.innerHTML = '<span>⏹️</span> Arrêter la lecture';
                 showToast('🔊 Lecture en cours...', 'info');
             };
             
@@ -1626,7 +1626,7 @@
             saveStoryMoodHistory();
             
             // Afficher le message de succès
-            showToast(📖 Humeur enregistrée pour "${story.title}", 'success');
+            showToast(`📖 Humeur enregistrée pour "${story.title}"`, 'success');
         }
 
         // Afficher l'histoire précédente
@@ -1695,8 +1695,8 @@
             if (!isRecording) {
                 isRecording = true;
                 micBtn.classList.add('recording');
-                micIcon.textContent = '⏹';
-                showToast('🎙 Enregistrement en cours...', 'info');
+                micIcon.textContent = '⏹️';
+                showToast('🎙️ Enregistrement en cours...', 'info');
                 
                 setTimeout(() => {
                     if (isRecording) {
@@ -1798,7 +1798,7 @@
             recentMoods.forEach((mood, index) => {
                 const moodElement = document.createElement('div');
                 moodElement.className = 'mood-item';
-                moodElement.style.animationDelay = ${index * 0.05}s;
+                moodElement.style.animationDelay = `${index * 0.05}s`;
                 moodElement.dataset.id = mood.id;
 
                 const date = new Date(mood.date);
@@ -1858,7 +1858,7 @@
             const noteType = mood.noteType || 'text';
             const noteTypeBadge = document.getElementById('modal-note-type');
             noteTypeBadge.textContent = noteType === 'voice' ? '🎤 Vocal' : '📝 Texte';
-            noteTypeBadge.className = note-type-badge ${noteType};
+            noteTypeBadge.className = `note-type-badge ${noteType}`;
             
             document.getElementById('note-modal').classList.add('show');
         }
@@ -1892,3 +1892,38 @@
             setTimeout(() => {
                 toast.classList.remove('show');
             }, 3000);
+        }
+        // Fonction pour voir une image en grand
+function viewImageInModal(imageUrl, title = '') {
+    // Mettre à jour le titre
+    document.getElementById('image-modal-title').textContent = title || '📸';
+    
+    // Créer l'élément image
+    const imageContainer = document.getElementById('modal-image-container');
+    imageContainer.innerHTML = `
+        <img src="${imageUrl}" alt="${title || 'Image'}">
+        ${title ? `<div class="modal-image-caption">${title}</div>` : ''}
+    `;
+    
+    // Afficher le modal
+    document.getElementById('image-modal').classList.add('show');
+}
+
+// Fermer le modal des images
+function closeImageModal() {
+    document.getElementById('image-modal').classList.remove('show');
+}
+
+// Événement pour fermer le modal des images
+document.getElementById('close-image-modal').addEventListener('click', closeImageModal);
+document.getElementById('close-image-btn').addEventListener('click', closeImageModal);
+
+// Fermer le modal en cliquant à l'extérieur
+document.getElementById('image-modal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeImageModal();
+    }
+});
+    </script>
+</body>
+</html>
