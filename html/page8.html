@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mon Journal</title>
+    <title>Mon Journal - Autism Friendly</title>
     <style>
         * {
             margin: 0;
@@ -44,7 +44,7 @@
             background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
             color: var(--foreground);
             min-height: 100vh;
-            padding: 2rem 1rem;
+            padding: 1rem;
             line-height: 1.6;
         }
 
@@ -53,22 +53,45 @@
             margin: 0 auto;
         }
 
+        /* Conteneur de l'image d'en-tête */
+        .header-image-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            padding-top: 0.5rem;
+        }
+
+        /* Image d'en-tête - NOUVELLE IMAGE */
+        .header-image {
+            width: 280px;
+            height: 150px;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-medium);
+            object-fit: cover;
+            border: 3px solid white;
+            transition: transform 0.3s ease;
+        }
+
+        .header-image:hover {
+            transform: scale(1.02);
+        }
+
         /* Header */
         .header {
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 2rem;
             animation: fadeIn 0.8s ease-out;
         }
 
         .header-emoji {
-            font-size: 4rem;
+            font-size: 3rem;
             margin-bottom: 1rem;
             display: block;
             animation: float 3s ease-in-out infinite;
         }
 
         .header h1 {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             font-weight: 700;
             color: var(--foreground);
             margin-bottom: 0.5rem;
@@ -77,6 +100,37 @@
         .header p {
             font-size: 1.1rem;
             color: var(--secondary);
+        }
+
+        /* Bouton d'accès aux histoires */
+        .stories-access {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .stories-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius-xl);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .stories-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .stories-btn .emoji {
+            font-size: 1.5rem;
         }
 
         /* Grille principale */
@@ -179,6 +233,7 @@
         /* Zone de texte */
         .note-container {
             margin-bottom: 1.5rem;
+            position: relative;
         }
 
         .note-label {
@@ -199,11 +254,44 @@
             font-size: 1rem;
             resize: none;
             transition: border-color 0.3s ease;
+            font-family: inherit;
         }
 
         .note-textarea:focus {
             outline: none;
             border-color: var(--primary);
+        }
+
+        /* Boutons de contrôle audio */
+        .audio-controls {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .audio-btn {
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            border: none;
+            background-color: var(--info);
+            color: white;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .audio-btn:hover {
+            background-color: #2563eb;
+            transform: scale(1.05);
+        }
+
+        .audio-btn:disabled {
+            background-color: var(--secondary);
+            cursor: not-allowed;
+            transform: none;
         }
 
         /* Bouton microphone */
@@ -291,6 +379,13 @@
             background-color: var(--muted);
             margin-bottom: 0.75rem;
             animation: slideIn 0.3s ease;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mood-item:hover {
+            background-color: rgba(74, 111, 165, 0.1);
+            transform: translateX(5px);
         }
 
         .mood-item-emoji {
@@ -310,6 +405,325 @@
             font-size: 0.875rem;
             color: var(--foreground);
             margin-top: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .note-type-badge {
+            font-size: 0.7rem;
+            padding: 0.1rem 0.3rem;
+            border-radius: 0.25rem;
+            background-color: var(--info);
+            color: white;
+        }
+
+        .note-type-badge.text {
+            background-color: var(--success);
+        }
+
+        .note-type-badge.voice {
+            background-color: var(--warning);
+        }
+
+        /* Page de lecture */
+        .reading-page {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--background);
+            z-index: 2000;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .reading-page.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .reading-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius-lg);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background-color: var(--primary-hover);
+            transform: scale(1.05);
+        }
+
+        .reading-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--foreground);
+            text-align: center;
+            flex: 1;
+        }
+
+        .categories-nav {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .category-tab {
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius-lg);
+            border: 2px solid var(--border);
+            background-color: var(--card);
+            color: var(--foreground);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .category-tab.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .category-tab:hover:not(.active) {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-soft);
+        }
+
+        /* Contenu de l'histoire */
+        .story-display {
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            background-color: var(--card);
+            border-radius: var(--border-radius-xl);
+            padding: 2rem;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .story-image-display {
+            width: 100%;
+            height: 150px; /* Réduit pour un meilleur visuel */
+            border-radius: var(--border-radius-lg);
+            overflow: hidden;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .story-image-display img {
+            width: 100%;
+            height: 150%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .story-image-display:hover img {
+            transform: scale(1.05);
+        }
+
+        .story-category-badge {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            padding: 0.5rem 1rem;
+            background-color: var(--primary);
+            color: white;
+            border-radius: var(--border-radius);
+            font-size: 0.875rem;
+            font-weight: 600;
+            z-index: 1;
+        }
+
+        .story-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--foreground);
+            margin-bottom: 2rem;
+            white-space: pre-wrap;
+            padding: 0 0.5rem;
+        }
+
+        /* Contrôles de lecture */
+        .story-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .story-control-btn {
+            padding: 1rem 2rem;
+            border-radius: var(--border-radius-lg);
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .story-control-btn.primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .story-control-btn.primary:hover:not(:disabled) {
+            background-color: var(--primary-hover);
+            transform: scale(1.05);
+        }
+
+        .story-control-btn.secondary {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+        .story-control-btn.secondary:hover:not(:disabled) {
+            background-color: #5a6268;
+            transform: scale(1.05);
+        }
+
+        .story-control-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Évaluation d'humeur */
+        .story-mood-evaluation {
+            background-color: var(--muted);
+            border-radius: var(--border-radius-xl);
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .mood-evaluation-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--foreground);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .story-moods-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .story-moods-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .story-moods-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .story-mood-btn {
+            padding: 1rem;
+            border-radius: var(--border-radius-lg);
+            border: 2px solid transparent;
+            background-color: var(--card);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .story-mood-btn:hover {
+            transform: scale(1.1);
+            background-color: rgba(74, 111, 165, 0.1);
+        }
+
+        .story-mood-btn.selected {
+            background-color: var(--sunshine-light);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-glow);
+            transform: scale(1.05);
+        }
+
+        .story-mood-emoji {
+            font-size: 2rem;
+        }
+
+        .story-mood-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--foreground);
+        }
+
+        /* Navigation entre histoires */
+        .stories-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--border);
+        }
+
+        .nav-btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius-lg);
+            border: 2px solid var(--primary);
+            background-color: transparent;
+            color: var(--primary);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background-color: var(--primary);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            border-color: var(--secondary);
+            color: var(--secondary);
+        }
+
+        .story-counter {
+            font-size: 1rem;
+            color: var(--secondary);
+            font-weight: 500;
         }
 
         /* Toast */
@@ -328,7 +742,7 @@
             transform: translateY(100px);
             opacity: 0;
             transition: all 0.3s ease;
-            z-index: 1000;
+            z-index: 1001;
         }
 
         .toast.show {
@@ -346,6 +760,118 @@
 
         .toast-emoji {
             font-size: 1.25rem;
+        }
+
+        /* Modal pour voir les notes */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: var(--card);
+            border-radius: var(--border-radius-xl);
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: var(--shadow-medium);
+            animation: slideUp 0.3s ease;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--foreground);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--secondary);
+            transition: color 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: var(--danger);
+        }
+
+        .modal-note {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--foreground);
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background-color: var(--muted);
+            border-radius: var(--border-radius-lg);
+            min-height: 100px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .modal-note.empty {
+            color: var(--secondary);
+            font-style: italic;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .modal-btn.primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .modal-btn.primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .modal-btn.secondary {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+        .modal-btn.secondary:hover {
+            background-color: #5a6268;
         }
 
         /* Animations CSS */
@@ -391,6 +917,17 @@
             }
         }
 
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         /* Scrollbar personnalisée */
         .history-container::-webkit-scrollbar {
             width: 6px;
@@ -409,15 +946,63 @@
         .history-container::-webkit-scrollbar-thumb:hover {
             background: var(--primary-hover);
         }
+        /* Modal pour les images en grand */
+.modal-image-container {
+    width: 100%;
+    max-height: 70vh;
+    overflow: hidden;
+    border-radius: var(--border-radius-lg);
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.modal-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Affiche toute l'image sans couper */
+    border-radius: var(--border-radius-lg);
+    background-color: var(--muted);
+}
+
+.modal-image-caption {
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--secondary);
+    margin-top: 0.5rem;
+    font-style: italic;
+}
+
+/* Style pour les images cliquables dans les histoires */
+.story-image-display {
+    cursor: zoom-in; /* Curseur qui indique qu'on peut zoomer */
+}
+
+.story-image-display:hover {
+    opacity: 0.95;
+}
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- Page principale du journal -->
+    <div class="container" id="main-page">
+        <!-- Image d'en-tête centrée en haut - NOUVELLE IMAGE DE LIVRE -->
+        <div class="header-image-container">
+            <img src="https://cdn.pixabay.com/photo/2024/02/28/12/56/girl-8602014_1280.png" alt="Journal Autism Friendly" class="header-image">
+        </div>
+
         <!-- En-tête -->
         <div class="header">
             <span class="header-emoji">📔</span>
-            <h1>Mon Journal</h1>
+            <h1>Mon Journal - Autism Friendly</h1>
             <p>Comment te sens-tu aujourd'hui ?</p>
+        </div>
+
+        <!-- Bouton d'accès aux histoires -->
+        <div class="stories-access">
+            <button class="stories-btn" id="stories-btn">
+                <span class="emoji">📚</span>
+                Lire des histoires
+            </button>
         </div>
 
         <!-- Grille principale -->
@@ -448,6 +1033,14 @@
                             <span id="mic-icon">🎤</span>
                         </button>
                     </div>
+                    
+                    <!-- Contrôles audio -->
+                    <div class="audio-controls">
+                        <button class="audio-btn" id="read-btn">
+                            <span>🔊</span>
+                            Lire le texte
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Bouton d'enregistrement -->
@@ -459,11 +1052,91 @@
 
             <!-- Historique des humeurs -->
             <div class="card card-calm">
-                <h2>Mes dernières humeurs</h2>
+                <h2>
+                    <span>📋</span>
+                    Mes dernières humeurs
+                </h2>
 
                 <div class="history-container" id="history-container">
                     <!-- Les humeurs seront générées par JavaScript -->
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page de lecture des histoires -->
+    <div class="reading-page" id="reading-page">
+        <div class="container">
+            <!-- En-tête de la page de lecture -->
+            <div class="reading-header">
+                <button class="back-btn" id="back-to-journal">
+                    <span>←</span>
+                    Retour au journal
+                </button>
+                <h2 class="reading-title">📚 Histoires Autism Friendly</h2>
+                <div style="width: 140px;"></div> <!-- Pour l'équilibrage -->
+            </div>
+
+            <!-- Navigation par catégorie -->
+            <div class="categories-nav">
+                <button class="category-tab active" data-category="all">
+                    Toutes les histoires
+                </button>
+                <button class="category-tab" data-category="routine">
+                    Histoires de routine
+                </button>
+                <button class="category-tab" data-category="funny">
+                    Histoires drôles
+                </button>
+            </div>
+
+            <!-- Affichage de l'histoire -->
+            <div class="story-display" id="story-display">
+                <!-- L'histoire sera affichée ici -->
+            </div>
+
+            <!-- Navigation entre histoires -->
+            <div class="stories-navigation">
+                <button class="nav-btn" id="prev-story" disabled>
+                    <span>←</span>
+                    Histoire précédente
+                </button>
+                
+                <div class="story-counter" id="story-counter">
+                    Histoire 1 sur 10
+                </div>
+                
+                <button class="nav-btn" id="next-story">
+                    Histoire suivante
+                    <span>→</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal pour voir les notes -->
+    <div class="modal" id="note-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <span id="modal-emoji">😊</span>
+                    Note du journal
+                    <span class="note-type-badge" id="modal-note-type"></span>
+                </h2>
+                <button class="close-btn" id="close-modal">&times;</button>
+            </div>
+            <div class="modal-note" id="modal-note-text">
+                <!-- Le contenu de la note sera inséré ici -->
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn secondary" id="close-note-btn">
+                    <span>←</span>
+                    Retour
+                </button>
+                <button class="modal-btn primary" id="read-note-btn">
+                    <span>🔊</span>
+                    Lire la note
+                </button>
             </div>
         </div>
     </div>
@@ -473,9 +1146,103 @@
         <span class="toast-emoji" id="toast-emoji">📝</span>
         <span id="toast-message">Ton humeur a été enregistrée !</span>
     </div>
-
+    <!-- Modal pour voir les photos en grand -->
+<div class="modal" id="image-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                <span id="image-modal-title">📸</span>
+                Voir l'image
+            </h2>
+            <button class="close-btn" id="close-image-modal">&times;</button>
+        </div>
+        <div class="modal-image-container" id="modal-image-container">
+            <!-- L'image en grand sera insérée ici -->
+        </div>
+        <div class="modal-actions">
+            <button class="modal-btn secondary" id="close-image-btn">
+                <span>←</span>
+                Retour
+            </button>
+        </div>
+    </div>
+</div>
     <script>
-        // Données des humeurs
+        // Données des histoires avec images redistribuées selon le contenu
+        const stories = [
+            {
+                id: 1,
+                category: "routine",
+                title: "Le réveil de Tom",
+                image: "https://cdn.pixabay.com/photo/2025/04/03/12/51/ai-generated-9511332_1280.png",
+                content: "Tom se réveille chaque matin.\nIl ouvre ses yeux, bâille et s'étire.\nIl met ses chaussons, va dans la salle de bain, se lave les dents et s'habille.\n« Tout est prêt pour ma journée ! » dit Tom.\nChaque matin, il suit la même routine. Cela le rend heureux et calme."
+            },
+            {
+                id: 2,
+                category: "routine",
+                title: "Le petit-déjeuner de Lila",
+                image: "https://cdn.pixabay.com/photo/2023/08/12/02/58/sandwich-8184642_1280.png",
+                content: "Lila aime son petit-déjeuner.\nChaque matin, elle met son bol, sa cuillère et verse le lait.\nElle mange tranquillement et met sa serviette sale dans le panier.\nAprès, elle range son bol.\n« Routine terminée ! » dit Lila, fière de elle."
+            },
+            {
+                id: 3,
+                category: "routine",
+                title: "Les mains propres de Sami",
+                image: "https://cdn.pixabay.com/photo/2020/03/26/22/57/hand-sanitizer-4972049_1280.png",
+                content: "Sami joue dehors et se salit les mains.\nIl va au lavabo : savon, frotte, frotte, frotte… rince et sèche.\nChaque fois, il suit les mêmes étapes.\n« Mes mains sont propres ! » dit Sami.\nSa routine le rend fort et prêt à jouer."
+            },
+            {
+                id: 4,
+                category: "routine",
+                title: "La sieste de Nina",
+                image: "https://cdn.pixabay.com/photo/2012/04/05/01/08/sleep-25528_1280.png",
+                content: "Nina a une routine pour la sieste.\nElle met son doudou sur son lit, ferme ses yeux et respire doucement.\nElle s'allonge, écoute la musique douce et ferme les yeux.\n« Bonne sieste, Nina ! » dit sa maman.\nNina adore sa routine, elle sait ce qui va se passer."
+            },
+            {
+                id: 5,
+                category: "routine",
+                title: "Le coucher de Max",
+                image: "https://cdn.pixabay.com/photo/2021/09/28/14/20/bed-6664621_1280.png", // NOUVELLE IMAGE DE LIT
+                content: "Max prépare son lit tous les soirs.\nIl met son pyjama, se brosse les dents et dit bonne nuit à son doudou.\nPuis il ferme les lumières et s'installe sous la couverture.\n« Bonne nuit, Max ! » dit papa.\nChaque soir, sa routine le rend calme et heureux."
+            },
+            {
+                id: 6,
+                category: "funny",
+                title: "Le chat farceur",
+                image: "https://cdn.pixabay.com/photo/2025/05/08/14/28/ai-generated-9587543_1280.png",
+                content: "Le chat Mimi adore sauter dans les boîtes.\nUn jour, il saute dans la boîte du gâteau !\nMimi ressort avec des miettes sur la tête.\n« Miaou ! » dit Mimi, très surpris.\nTout le monde rigole !"
+            },
+            {
+                id: 7,
+                category: "funny",
+                title: "Le pantalon dans la tête",
+                image: "https://cdn.pixabay.com/photo/2012/04/24/23/28/pants-41115_1280.png",
+                content: "Tom met son pantalon… mais il se trompe !\nLe pantalon va sur sa tête au lieu de ses jambes !\nTom rigole et dit : « Oups, ce n'est pas le bon trou ! »\nSa maman rit aussi."
+            },
+            {
+                id: 8,
+                category: "funny",
+                title: "La chaussette fugitive",
+                image: "https://cdn.pixabay.com/photo/2017/01/31/23/04/clothes-2027993_1280.png",
+                content: "Lila cherche ses chaussettes.\nUne chaussette court toute seule !\nElle se cache sous la chaise et fait « hop ! hop ! »\nLila rigole et attrape enfin sa chaussette."
+            },
+            {
+                id: 9,
+                category: "funny",
+                title: "Le bain surprise",
+                image: "https://cdn.pixabay.com/photo/2020/06/02/13/19/bathroom-5250914_1280.png", // Image réutilisée pour bain
+                content: "Sami met de l'eau dans la baignoire.\nQuand il met son canard, plouf ! le canard saute dans l'eau et fait un grand splash !\nSami rigole, tout mouillé, mais très content."
+            },
+            {
+                id: 10,
+                category: "funny",
+                title: "Le ballon rebondissant",
+                image: "https://cdn.pixabay.com/photo/2012/04/05/01/41/balloon-25739_1280.png",
+                content: "Max joue avec un ballon.\nLe ballon rebondit sur le mur… puis sur sa tête !\nMax rigole et dit : « Ce ballon est rigolo ! »\nIl continue de jouer, en rigolant à chaque rebond."
+            }
+        ];
+
+        // Données des humeurs pour le journal
         const moods = [
             { emoji: '😊', label: 'Content', color: 'var(--sunshine-light)' },
             { emoji: '😐', label: 'Normal', color: 'var(--muted)' },
@@ -487,19 +1254,40 @@
             { emoji: '🥳', label: 'Excité', color: 'var(--mint-light)' },
         ];
 
+        // Options d'humeur pour les histoires
+        const storyMoodOptions = [
+            { emoji: '😊', label: 'Content', color: 'var(--sunshine-light)' },
+            { emoji: '😂', label: 'Drôle', color: 'var(--mint-light)' },
+            { emoji: '😐', label: 'Normal', color: 'var(--muted)' },
+            { emoji: '😢', label: 'Triste', color: 'var(--calm-blue-light)' },
+            { emoji: '🤔', label: 'Pensif', color: 'var(--lavender-light)' },
+        ];
+
         // État de l'application
         let selectedMood = null;
         let isRecording = false;
         let moodHistory = [];
+        let speechSynthesis = window.speechSynthesis;
+        let isSpeaking = false;
+        let currentNoteType = 'text';
+        
+        // État de la page de lecture
+        let currentReadingCategory = 'all';
+        let currentStoryIndex = 0;
+        let filteredStories = [...stories];
+        let storyMoodHistory = [];
+        let currentUtterance = null;
 
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
             loadMoodHistory();
+            loadStoryMoodHistory();
             setupMoodButtons();
             setupEventListeners();
+            setupReadingPage();
         });
 
-        // Charger l'historique depuis localStorage
+        // Charger l'historique du journal
         function loadMoodHistory() {
             const savedMoods = localStorage.getItem('moodHistory');
             if (savedMoods) {
@@ -508,12 +1296,25 @@
             renderMoodHistory();
         }
 
-        // Sauvegarder l'historique dans localStorage
+        // Charger l'historique des humeurs pour les histoires
+        function loadStoryMoodHistory() {
+            const savedMoods = localStorage.getItem('storyMoodHistory');
+            if (savedMoods) {
+                storyMoodHistory = JSON.parse(savedMoods);
+            }
+        }
+
+        // Sauvegarder l'historique du journal
         function saveMoodHistory() {
             localStorage.setItem('moodHistory', JSON.stringify(moodHistory));
         }
 
-        // Configurer les boutons d'humeur
+        // Sauvegarder l'historique des histoires
+        function saveStoryMoodHistory() {
+            localStorage.setItem('storyMoodHistory', JSON.stringify(storyMoodHistory));
+        }
+
+        // Configurer les boutons d'humeur du journal
         function setupMoodButtons() {
             const moodsGrid = document.getElementById('moods-grid');
             moodsGrid.innerHTML = '';
@@ -533,7 +1334,7 @@
 
                 button.addEventListener('click', () => {
                     selectedMood = mood.emoji;
-                    setupMoodButtons(); // Re-render pour mettre à jour la sélection
+                    setupMoodButtons();
                 });
 
                 moodsGrid.appendChild(button);
@@ -548,15 +1349,315 @@
             // Bouton microphone
             document.getElementById('mic-btn').addEventListener('click', toggleRecording);
 
+            // Bouton de lecture
+            document.getElementById('read-btn').addEventListener('click', readText);
+            
+            // Bouton de fermeture modal
+            document.getElementById('close-modal').addEventListener('click', closeModal);
+            document.getElementById('close-note-btn').addEventListener('click', closeModal);
+            
+            // Bouton de lecture dans le modal
+            document.getElementById('read-note-btn').addEventListener('click', readModalNote);
+            
+            // Fermer le modal en cliquant à l'extérieur
+            document.getElementById('note-modal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+
             // Entrée dans la zone de texte
             document.getElementById('note-textarea').addEventListener('input', function() {
                 if (isRecording) {
-                    toggleRecording(); // Arrêter l'enregistrement si l'utilisateur tape
+                    toggleRecording();
                 }
+                
+                // Activer/désactiver le bouton de lecture
+                const hasText = this.value.trim().length > 0;
+                document.getElementById('read-btn').disabled = !hasText;
+                
+                // Mettre à jour le type de note
+                currentNoteType = 'text';
+            });
+            
+            // Initialiser l'état du bouton de lecture
+            document.getElementById('read-btn').disabled = true;
+
+            // Bouton d'accès aux histoires
+            document.getElementById('stories-btn').addEventListener('click', openReadingPage);
+        }
+
+        // Configurer la page de lecture
+        function setupReadingPage() {
+            // Bouton de retour
+            document.getElementById('back-to-journal').addEventListener('click', closeReadingPage);
+            
+            // Boutons de catégorie
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const category = this.dataset.category;
+                    
+                    // Mettre à jour la catégorie active
+                    document.querySelectorAll('.category-tab').forEach(t => {
+                        t.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // Mettre à jour et afficher les histoires
+                    currentReadingCategory = category;
+                    filterStories();
+                    displayCurrentStory();
+                });
+            });
+            
+            // Boutons de navigation
+            document.getElementById('prev-story').addEventListener('click', showPreviousStory);
+            document.getElementById('next-story').addEventListener('click', showNextStory);
+        }
+
+        // Ouvrir la page de lecture
+        function openReadingPage() {
+            document.getElementById('main-page').style.display = 'none';
+            document.getElementById('reading-page').classList.add('active');
+            
+            // Réinitialiser l'affichage
+            filterStories();
+            displayCurrentStory();
+        }
+
+        // Fermer la page de lecture
+        function closeReadingPage() {
+            document.getElementById('reading-page').classList.remove('active');
+            document.getElementById('main-page').style.display = 'block';
+            
+            // Arrêter la lecture audio si en cours
+            if (isSpeaking) {
+                speechSynthesis.cancel();
+                isSpeaking = false;
+            }
+        }
+
+        // Filtrer les histoires par catégorie
+        function filterStories() {
+            if (currentReadingCategory === 'all') {
+                filteredStories = [...stories];
+            } else {
+                filteredStories = stories.filter(story => story.category === currentReadingCategory);
+            }
+            
+            // Réinitialiser l'index
+            currentStoryIndex = 0;
+        }
+
+        // Afficher l'histoire actuelle
+        function displayCurrentStory() {
+            if (filteredStories.length === 0) {
+                document.getElementById('story-display').innerHTML = `
+                    <div style="text-align: center; padding: 3rem; color: var(--secondary);">
+                        <span style="font-size: 3rem; display: block; margin-bottom: 1rem;">📚</span>
+                        <p>Aucune histoire disponible dans cette catégorie.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const story = filteredStories[currentStoryIndex];
+            
+            // Vérifier l'humeur déjà enregistrée
+            const existingMood = storyMoodHistory.find(m => m.storyId === story.id);
+            const userMood = existingMood ? existingMood.mood : null;
+            
+            // Générer les boutons d'humeur
+            let moodButtonsHTML = '';
+            storyMoodOptions.forEach(mood => {
+                const isSelected = userMood === mood.emoji;
+                moodButtonsHTML += `
+                    <button class="story-mood-btn ${isSelected ? 'selected' : ''}" 
+                            data-mood="${mood.emoji}"
+                            style="${isSelected ? background-color: ${mood.color}; : ''}">
+                        <span class="story-mood-emoji">${mood.emoji}</span>
+                        <span class="story-mood-label">${mood.label}</span>
+                    </button>
+                `;
+            });
+
+            // Afficher l'histoire
+            document.getElementById('story-display').innerHTML = `
+                <div class="story-image-display">
+                    <img src="${story.image}" alt="${story.title}">
+                    <div class="story-category-badge">
+                        ${story.category === 'routine' ? '🔄 Routine' : '😂 Drôle'}
+                    </div>
+                </div>
+                
+                <h2 style="font-size: 1.75rem; font-weight: 700; color: var(--foreground); margin-bottom: 1rem;">
+                    ${story.title}
+                </h2>
+                
+                <div class="story-text">
+                    ${story.content}
+                </div>
+                
+                <div class="story-controls">
+                    <button class="story-control-btn primary" id="read-story-btn">
+                        <span>🔊</span>
+                        Écouter cette histoire
+                    </button>
+                </div>
+                
+                <div class="story-mood-evaluation">
+                    <div class="mood-evaluation-title">
+                        Cette histoire te fait sentir comment ?
+                    </div>
+                    <div class="story-moods-grid" id="story-moods-grid">
+                        ${moodButtonsHTML}
+                    </div>
+                </div>
+            `;
+            
+            // Mettre à jour le compteur
+            document.getElementById('story-counter').textContent = 
+                Histoire ${currentStoryIndex + 1} sur ${filteredStories.length};
+            
+            // Mettre à jour les boutons de navigation
+            document.getElementById('prev-story').disabled = currentStoryIndex === 0;
+            document.getElementById('next-story').disabled = currentStoryIndex === filteredStories.length - 1;
+            
+            // Ajouter les écouteurs d'événements
+            setupStoryEventListeners(story);
+        }
+
+        // Configurer les écouteurs d'événements pour l'histoire
+        function setupStoryEventListeners(story) {
+            // Bouton de lecture
+            const readBtn = document.getElementById('read-story-btn');
+            readBtn.addEventListener('click', function() {
+                readStoryAloud(story, readBtn);
+            });
+            
+            // Boutons d'humeur
+            document.querySelectorAll('#story-moods-grid .story-mood-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const mood = this.dataset.mood;
+                    saveStoryMood(story, mood);
+                    
+                    // Mettre à jour l'affichage
+                    document.querySelectorAll('#story-moods-grid .story-mood-btn').forEach(b => {
+                        b.classList.remove('selected');
+                        b.style.backgroundColor = '';
+                    });
+                    
+                    this.classList.add('selected');
+                    const moodObj = storyMoodOptions.find(m => m.emoji === mood);
+                    if (moodObj) {
+                        this.style.backgroundColor = moodObj.color;
+                    }
+                });
             });
         }
 
-        // Enregistrer l'humeur
+        // Lire une histoire à voix haute
+        function readStoryAloud(story, buttonElement) {
+            if (isSpeaking && currentUtterance) {
+                // Arrêter la lecture si en cours
+                speechSynthesis.cancel();
+                isSpeaking = false;
+                buttonElement.innerHTML = '<span>🔊</span> Écouter cette histoire';
+                return;
+            }
+            
+            const text = ${story.title}. ${story.content};
+            
+            // Créer l'énoncé
+            currentUtterance = new SpeechSynthesisUtterance(text);
+            currentUtterance.lang = 'fr-FR';
+            currentUtterance.rate = 0.9;
+            currentUtterance.pitch = 1;
+            currentUtterance.volume = 1;
+            
+            currentUtterance.onstart = function() {
+                isSpeaking = true;
+                buttonElement.innerHTML = '<span>⏹</span> Arrêter la lecture';
+                showToast('🔊 Lecture en cours...', 'info');
+            };
+            
+            currentUtterance.onend = function() {
+                isSpeaking = false;
+                buttonElement.innerHTML = '<span>🔊</span> Écouter cette histoire';
+                showToast('✅ Lecture terminée', 'success');
+                currentUtterance = null;
+            };
+            
+            currentUtterance.onerror = function() {
+                isSpeaking = false;
+                buttonElement.innerHTML = '<span>🔊</span> Écouter cette histoire';
+                showToast('🔇 Erreur de lecture', 'error');
+                currentUtterance = null;
+            };
+            
+            // Lancer la lecture
+            speechSynthesis.speak(currentUtterance);
+        }
+
+        // Enregistrer l'humeur pour une histoire
+        function saveStoryMood(story, moodEmoji) {
+            // Vérifier si une humeur existe déjà pour cette histoire
+            const existingIndex = storyMoodHistory.findIndex(m => m.storyId === story.id);
+            const moodLabel = storyMoodOptions.find(m => m.emoji === moodEmoji)?.label || moodEmoji;
+            
+            const moodEntry = {
+                storyId: story.id,
+                storyTitle: story.title,
+                mood: moodEmoji,
+                moodLabel: moodLabel,
+                date: new Date().toISOString(),
+                category: story.category
+            };
+            
+            if (existingIndex !== -1) {
+                // Mettre à jour l'humeur existante
+                storyMoodHistory[existingIndex] = moodEntry;
+            } else {
+                // Ajouter une nouvelle humeur
+                storyMoodHistory.push(moodEntry);
+            }
+            
+            // Sauvegarder
+            saveStoryMoodHistory();
+            
+            // Afficher le message de succès
+            showToast(📖 Humeur enregistrée pour "${story.title}", 'success');
+        }
+
+        // Afficher l'histoire précédente
+        function showPreviousStory() {
+            if (currentStoryIndex > 0) {
+                currentStoryIndex--;
+                displayCurrentStory();
+                
+                // Arrêter la lecture si en cours
+                if (isSpeaking) {
+                    speechSynthesis.cancel();
+                    isSpeaking = false;
+                }
+            }
+        }
+
+        // Afficher l'histoire suivante
+        function showNextStory() {
+            if (currentStoryIndex < filteredStories.length - 1) {
+                currentStoryIndex++;
+                displayCurrentStory();
+                
+                // Arrêter la lecture si en cours
+                if (isSpeaking) {
+                    speechSynthesis.cancel();
+                    isSpeaking = false;
+                }
+            }
+        }
+
+        // Fonctions du journal (inchangées)
         function saveMood() {
             if (!selectedMood) {
                 showToast('🤔 Choisis comment tu te sens !', 'error');
@@ -565,59 +1666,119 @@
 
             const note = document.getElementById('note-textarea').value.trim();
             const moodEntry = {
+                id: Date.now(),
                 date: new Date().toISOString(),
                 mood: selectedMood,
-                note: note || undefined
+                moodLabel: moods.find(m => m.emoji === selectedMood)?.label || selectedMood,
+                note: note || undefined,
+                noteType: currentNoteType
             };
 
-            // Ajouter à l'historique
             moodHistory.push(moodEntry);
-            
-            // Sauvegarder
             saveMoodHistory();
-            
-            // Mettre à jour l'affichage
             renderMoodHistory();
             
-            // Réinitialiser le formulaire
             selectedMood = null;
             document.getElementById('note-textarea').value = '';
             setupMoodButtons();
+            document.getElementById('read-btn').disabled = true;
+            currentNoteType = 'text';
             
-            // Afficher le message de succès
             showToast('📝 Ton humeur a été enregistrée !', 'success');
         }
 
-        // Basculer l'enregistrement vocal
         function toggleRecording() {
             const micBtn = document.getElementById('mic-btn');
             const micIcon = document.getElementById('mic-icon');
             const textarea = document.getElementById('note-textarea');
 
             if (!isRecording) {
-                // Démarrer l'enregistrement
                 isRecording = true;
                 micBtn.classList.add('recording');
-                micIcon.textContent = '⏹️';
-                showToast('🎙️ Enregistrement en cours...', 'info');
+                micIcon.textContent = '⏹';
+                showToast('🎙 Enregistrement en cours...', 'info');
                 
-                // Simuler l'enregistrement (3 secondes)
                 setTimeout(() => {
                     if (isRecording) {
-                        toggleRecording(); // Arrêter automatiquement
-                        textarea.value = textarea.value + ' [Message vocal] ';
+                        toggleRecording();
+                        const voiceMessage = '[Message vocal enregistré]';
+                        if (textarea.value.trim()) {
+                            textarea.value = textarea.value + ' ' + voiceMessage;
+                        } else {
+                            textarea.value = voiceMessage;
+                        }
+                        document.getElementById('read-btn').disabled = false;
+                        currentNoteType = 'voice';
                         showToast('🎤 Message vocal enregistré !', 'success');
                     }
                 }, 3000);
             } else {
-                // Arrêter l'enregistrement
                 isRecording = false;
                 micBtn.classList.remove('recording');
                 micIcon.textContent = '🎤';
             }
         }
 
-        // Afficher l'historique des humeurs
+        function readText() {
+            const text = document.getElementById('note-textarea').value.trim();
+            if (!text) {
+                showToast('📝 Aucun texte à lire !', 'error');
+                return;
+            }
+            
+            if (text.includes('[Message vocal enregistré]')) {
+                speakText("Message vocal enregistré. Pour écouter la note complète, enregistre ton humeur et consulte l'historique.", 'fr-FR');
+                showToast('🎤 Message vocal - Enregistre pour écouter', 'info');
+            } else {
+                speakText(text, 'fr-FR');
+                showToast('🔊 Texte lu à voix haute', 'info');
+            }
+        }
+
+        function readModalNote() {
+            const noteText = document.getElementById('modal-note-text').textContent;
+            const noNoteText = 'Aucune note pour cette entrée.';
+            
+            if (noteText && noteText !== noNoteText) {
+                const moodId = parseInt(document.querySelector('.mood-item.selected')?.dataset.id);
+                const mood = moodHistory.find(m => m.id === moodId);
+                const noteType = mood?.noteType || 'text';
+                
+                if (noteType === 'voice') {
+                    speakText("Note enregistrée vocalement. Cette note a été créée par enregistrement vocal.", 'fr-FR');
+                } else {
+                    speakText(noteText, 'fr-FR');
+                }
+            }
+        }
+
+        function speakText(text, lang) {
+            if (isSpeaking) {
+                speechSynthesis.cancel();
+            }
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = lang;
+            utterance.rate = 0.9;
+            utterance.pitch = 1;
+            utterance.volume = 1;
+            
+            utterance.onstart = function() {
+                isSpeaking = true;
+            };
+            
+            utterance.onend = function() {
+                isSpeaking = false;
+            };
+            
+            utterance.onerror = function() {
+                isSpeaking = false;
+                showToast('🔇 Erreur de synthèse vocale', 'error');
+            };
+            
+            speechSynthesis.speak(utterance);
+        }
+
         function renderMoodHistory() {
             const container = document.getElementById('history-container');
             
@@ -632,14 +1793,13 @@
             }
 
             container.innerHTML = '';
-            
-            // Afficher les 10 dernières humeurs (les plus récentes en premier)
             const recentMoods = moodHistory.slice(-10).reverse();
             
             recentMoods.forEach((mood, index) => {
                 const moodElement = document.createElement('div');
                 moodElement.className = 'mood-item';
-                moodElement.style.animationDelay = `${index * 0.05}s`;
+                moodElement.style.animationDelay = ${index * 0.05}s;
+                moodElement.dataset.id = mood.id;
 
                 const date = new Date(mood.date);
                 const dateString = date.toLocaleDateString('fr-FR', {
@@ -650,61 +1810,85 @@
                     minute: '2-digit'
                 });
 
+                const noteType = mood.noteType || 'text';
+                const noteTypeClass = noteType === 'voice' ? 'voice' : 'text';
+                const noteTypeLabel = noteType === 'voice' ? '🎤 Vocal' : '📝 Texte';
+                const displayNote = mood.note || '';
+
                 moodElement.innerHTML = `
                     <span class="mood-item-emoji">${mood.mood}</span>
                     <div class="mood-item-content">
                         <div class="mood-item-date">${dateString}</div>
-                        ${mood.note ? `<div class="mood-item-note">${mood.note}</div>` : ''}
+                        ${displayNote ? `
+                            <div class="mood-item-note">
+                                <span class="note-type-badge ${noteTypeClass}">${noteTypeLabel}</span>
+                                ${displayNote.substring(0, 40)}${displayNote.length > 40 ? '...' : ''}
+                            </div>
+                        ` : ''}
                     </div>
                 `;
 
+                moodElement.addEventListener('click', () => {
+                    document.querySelectorAll('.mood-item').forEach(item => {
+                        item.classList.remove('selected');
+                    });
+                    moodElement.classList.add('selected');
+                    viewNote(mood.id);
+                });
+                
                 container.appendChild(moodElement);
             });
         }
 
-        // Afficher un toast
+        function viewNote(id) {
+            const mood = moodHistory.find(m => m.id === id);
+            if (!mood) return;
+            
+            document.getElementById('modal-emoji').textContent = mood.mood;
+            const noteText = mood.note || 'Aucune note pour cette entrée.';
+            const noteElement = document.getElementById('modal-note-text');
+            noteElement.textContent = noteText;
+            
+            if (!mood.note) {
+                noteElement.classList.add('empty');
+            } else {
+                noteElement.classList.remove('empty');
+            }
+            
+            const noteType = mood.noteType || 'text';
+            const noteTypeBadge = document.getElementById('modal-note-type');
+            noteTypeBadge.textContent = noteType === 'voice' ? '🎤 Vocal' : '📝 Texte';
+            noteTypeBadge.className = note-type-badge ${noteType};
+            
+            document.getElementById('note-modal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('note-modal').classList.remove('show');
+            if (isSpeaking) {
+                speechSynthesis.cancel();
+            }
+        }
+
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
             const toastEmoji = document.getElementById('toast-emoji');
             const toastMessage = document.getElementById('toast-message');
 
-            // Définir l'emoji selon le type
             let emoji = '📝';
             if (type === 'error') emoji = '🤔';
-            if (type === 'info') emoji = '🎙️';
+            if (type === 'info') emoji = '🔊';
+            if (type === 'success') emoji = '✅';
 
             toastEmoji.textContent = emoji;
             toastMessage.textContent = message;
             
-            // Appliquer la classe de type
             toast.className = 'toast';
             if (type === 'error') toast.classList.add('toast-error');
             if (type === 'info') toast.classList.add('toast-info');
             
-            // Afficher le toast
             toast.classList.add('show');
             
-            // Cacher le toast après 3 secondes
             setTimeout(() => {
                 toast.classList.remove('show');
             }, 3000);
-        }
-
-        // Fonction pour formater la date
-        function formatDate(date) {
-            const today = new Date().toDateString();
-            const yesterday = new Date(Date.now() - 86400000).toDateString();
-            const moodDate = new Date(date).toDateString();
-
-            if (moodDate === today) return "Aujourd'hui";
-            if (moodDate === yesterday) return 'Hier';
-            
-            return new Date(date).toLocaleDateString('fr-FR', {
-                weekday: 'long',
-                day: 'numeric',
-                month: 'long'
-            });
-        }
-    </script>
-</body>
-</html>
