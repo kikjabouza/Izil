@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atelier Dessin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #4a6fa5;
+            --primary-foreground: #ffffff;
+            --primary-hover: #3a5a8c;
+            --secondary: #6c757d;
+            --success: #10b981;
+            --background: #f8f9fa;
+            --foreground: #1a1a1a;
+            --card: #ffffff;
+            --border: #e0e0e0;
+            --muted: #f1f5f9;
+            --muted-foreground: #64748b;
+            --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-medium: 0 8px 24px rgba(0, 0, 0, 0.12);
+            --shadow-glow: 0 8px 32px rgba(74, 111, 165, 0.2);
+            --border-radius: 1rem;
+            --border-radius-lg: 1.5rem;
+            --border-radius-xl: 2rem;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            color: var(--foreground);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .header-emoji {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            display: block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--foreground);
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: var(--secondary);
+        }
+
+        /* Grille principale */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr 3fr;
+            }
+        }
+
+        /* Panneau d'outils */
+        .tools-panel {
+            background-color: var(--card);
+            border-radius: var(--border-radius-xl);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid var(--border);
+        }
+
+        .tools-panel h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--foreground);
+            margin-bottom: 1.5rem;
+        }
+
+        .tool-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .tool-section p {
+            font-size: 0.875rem;
+            color: var(--muted-foreground);
+            margin-bottom: 0.75rem;
+        }
+
+        /* Couleurs */
+        .colors-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.5rem;
+        }
+
+        .color-btn {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: var(--border-radius);
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .color-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .color-btn.active {
+            border-color: var(--foreground);
+            transform: scale(1.1);
+            box-shadow: var(--shadow-glow);
+        }
+
+        /* Tailles de pinceau */
+        .brush-sizes {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .size-btn {
+            flex: 1;
+            padding: 0.5rem;
+            border-radius: var(--border-radius);
+            border: 2px solid transparent;
+            background-color: var(--muted);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .size-btn:hover {
+            background-color: rgba(0, 0, 0, 0.08);
+        }
+
+        .size-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Tampons */
+        .stamps-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+        }
+
+        .stamp-btn {
+            width: 3rem;
+            height: 3rem;
+            border-radius: var(--border-radius);
+            border: 2px solid transparent;
+            background-color: var(--muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stamp-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .stamp-btn.active {
+            background-color: rgba(74, 111, 165, 0.2);
+            border-color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        /* Actions */
+        .actions-grid {
+            display: grid;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            padding: 0.75rem;
+            border-radius: var(--border-radius-lg);
+            border: 2px solid var(--border);
+            background-color: transparent;
+            color: var(--foreground);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.02);
+            border-color: var(--primary);
+            background-color: rgba(74, 111, 165, 0.05);
+        }
+
+        .action-btn.primary {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .action-btn.primary:hover {
+            background-color: var(--primary-hover);
+            box-shadow: var(--shadow-glow);
+        }
+
+        /* Canvas */
+        .canvas-container {
+            background-color: var(--card);
+            border-radius: var(--border-radius-xl);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-medium);
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        canvas {
+            width: 100%;
+            height: 60vh;
+            background-color: white;
+            border-radius: var(--border-radius-lg);
+            cursor: crosshair;
+            touch-action: none;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Indicateur d'outil */
+        .tool-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background-color: var(--muted);
+            border-radius: var(--border-radius);
+            font-size: 0.875rem;
+        }
+
+        .tool-preview {
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+        }
+
+        .tool-preview.brush {
+            background-color: var(--current-color);
+        }
+
+        .tool-preview.eraser {
+            background-color: white;
+            border: 1px solid var(--border);
+        }
+
+        .tool-preview.stamp {
+            font-size: 1rem;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background-color: var(--success);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-medium);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast-emoji {
+            font-size: 1.25rem;
+        }
+
+        /* Animations CSS */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- En-tête -->
+        <div class="header">
+            <span class="header-emoji">🎨</span>
+            <h1>Atelier Dessin</h1>
+            <p>Exprime ta créativité !</p>
+        </div>
+
+        <!-- Grille principale -->
+        <div class="main-grid">
+            <!-- Panneau d'outils -->
+            <div class="tools-panel">
+                <h3>Outils</h3>
+
+                <!-- Couleurs -->
+                <div class="tool-section">
+                    <p>Couleurs</p>
+                    <div class="colors-grid" id="colors-grid">
+                        <!-- Les couleurs seront générées par JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Taille du pinceau -->
+                <div class="tool-section">
+                    <p>Taille du pinceau</p>
+                    <div class="brush-sizes" id="brush-sizes">
+                        <!-- Les tailles seront générées par JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Tampons -->
+                <div class="tool-section">
+                    <p>Tampons</p>
+                    <div class="stamps-grid" id="stamps-grid">
+                        <!-- Les tampons seront générées par JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="tool-section">
+                    <div class="actions-grid">
+                        <button class="action-btn" id="eraser-btn">
+                            <span>🧽</span>
+                            Gomme
+                        </button>
+                        <button class="action-btn" id="clear-btn">
+                            <span>🗑️</span>
+                            Effacer tout
+                        </button>
+                        <button class="action-btn primary" id="save-btn">
+                            <span>💾</span>
+                            Sauvegarder
+                        </button>
+                        <button class="action-btn" id="download-btn">
+                            <span>📥</span>
+                            Télécharger
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Indicateur d'outil -->
+                <div class="tool-indicator" id="tool-indicator">
+                    <span>Outil actuel :</span>
+                    <div class="tool-preview brush" id="tool-preview"></div>
+                    <span id="tool-name">Pinceau Bleu</span>
+                </div>
+            </div>
+
+            <!-- Canvas -->
+            <div class="canvas-container">
+                <canvas id="drawing-canvas">
+                    Votre navigateur ne supporte pas le canvas.
+                </canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <span class="toast-emoji" id="toast-emoji">🎨</span>
+        <span id="toast-message">Dessin sauvegardé !</span>
+    </div>
+
+    <script>
+        // Configuration du dessin
+        const colors = [
+            { value: '#3B82F6', name: 'Bleu' },
+            { value: '#10B981', name: 'Vert' },
+            { value: '#F472B6', name: 'Rose' },
+            { value: '#FBBF24', name: 'Jaune' },
+            { value: '#8B5CF6', name: 'Violet' },
+            { value: '#F97316', name: 'Orange' },
+            { value: '#EF4444', name: 'Rouge' },
+            { value: '#000000', name: 'Noir' },
+            { value: '#FFFFFF', name: 'Blanc' },
+        ];
+
+        const brushSizes = [
+            { value: 5, label: 'Petit' },
+            { value: 15, label: 'Moyen' },
+            { value: 30, label: 'Grand' },
+        ];
+
+        const stamps = ['🐱', '🐕', '🐰', '🌸', '⭐', '❤️', '🌈', '🦋'];
+
+        // État de l'application
+        let canvas = null;
+        let ctx = null;
+        let isDrawing = false;
+        let currentColor = '#3B82F6';
+        let brushSize = 15;
+        let isEraser = false;
+        let currentStamp = null;
+        let lastX = 0;
+        let lastY = 0;
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            initCanvas();
+            setupTools();
+            setupEventListeners();
+            updateToolIndicator();
+        });
+
+        // Initialiser le canvas
+        function initCanvas() {
+            canvas = document.getElementById('drawing-canvas');
+            ctx = canvas.getContext('2d');
+            
+            // Définir la taille du canvas
+            resizeCanvas();
+            
+            // Écouter le redimensionnement de la fenêtre
+            window.addEventListener('resize', resizeCanvas);
+            
+            // Initialiser le canvas avec un fond blanc
+            clearCanvas();
+            
+            // Configurer le style de dessin par défaut
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+        }
+
+        // Redimensionner le canvas
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            const containerWidth = container.clientWidth;
+            const containerHeight = Math.min(containerWidth * 0.75, window.innerHeight * 0.6);
+            
+            canvas.width = containerWidth;
+            canvas.height = containerHeight;
+            
+            // Redessiner le contenu existant si nécessaire
+            redrawCanvas();
+        }
+
+        // Redessiner le contenu (pour le redimensionnement)
+        function redrawCanvas() {
+            // Dans une vraie application, vous sauvegarderiez les dessins
+            // et les redessineriez ici. Pour la simplicité, on efface.
+            clearCanvas();
+        }
+
+        // Configurer les outils
+        function setupTools() {
+            // Configurer les couleurs
+            const colorsGrid = document.getElementById('colors-grid');
+            colorsGrid.innerHTML = colors.map(color => `
+                <button class="color-btn ${color.value === currentColor ? 'active' : ''}"
+                        style="background-color: ${color.value}"
+                        title="${color.name}"
+                        data-color="${color.value}"
+                        data-name="${color.name}">
+                </button>
+            `).join('');
+
+            // Configurer les tailles de pinceau
+            const brushSizesGrid = document.getElementById('brush-sizes');
+            brushSizesGrid.innerHTML = brushSizes.map(size => `
+                <button class="size-btn ${size.value === brushSize ? 'active' : ''}"
+                        data-size="${size.value}">
+                    ${size.label}
+                </button>
+            `).join('');
+
+            // Configurer les tampons
+            const stampsGrid = document.getElementById('stamps-grid');
+            stampsGrid.innerHTML = stamps.map(stamp => `
+                <button class="stamp-btn ${stamp === currentStamp ? 'active' : ''}"
+                        data-stamp="${stamp}">
+                    ${stamp}
+                </button>
+            `).join('');
+        }
+
+        // Configurer les écouteurs d'événements
+        function setupEventListeners() {
+            // Événements de canvas
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+            
+            // Support tactile
+            canvas.addEventListener('touchstart', handleTouchStart);
+            canvas.addEventListener('touchmove', handleTouchMove);
+            canvas.addEventListener('touchend', stopDrawing);
+            
+            // Événements de couleur
+            document.querySelectorAll('.color-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    currentColor = btn.dataset.color;
+                    isEraser = false;
+                    currentStamp = null;
+                    updateTools();
+                    updateToolIndicator();
+                });
+            });
+            
+            // Événements de taille
+            document.querySelectorAll('.size-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    brushSize = parseInt(btn.dataset.size);
+                    updateTools();
+                    updateToolIndicator();
+                });
+            });
+            
+            // Événements de tampon
+            document.querySelectorAll('.stamp-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    currentStamp = btn.dataset.stamp === currentStamp ? null : btn.dataset.stamp;
+                    isEraser = false;
+                    updateTools();
+                    updateToolIndicator();
+                });
+            });
+            
+            // Boutons d'action
+            document.getElementById('eraser-btn').addEventListener('click', toggleEraser);
+            document.getElementById('clear-btn').addEventListener('click', clearCanvas);
+            document.getElementById('save-btn').addEventListener('click', saveDrawing);
+            document.getElementById('download-btn').addEventListener('click', downloadDrawing);
+        }
+
+        // Mettre à jour l'affichage des outils
+        function updateTools() {
+            // Mettre à jour les couleurs
+            document.querySelectorAll('.color-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.color === currentColor && !isEraser);
+            });
+            
+            // Mettre à jour les tailles
+            document.querySelectorAll('.size-btn').forEach(btn => {
+                btn.classList.toggle('active', parseInt(btn.dataset.size) === brushSize);
+            });
+            
+            // Mettre à jour les tampons
+            document.querySelectorAll('.stamp-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.stamp === currentStamp);
+            });
+            
+            // Mettre à jour le bouton gomme
+            const eraserBtn = document.getElementById('eraser-btn');
+            eraserBtn.classList.toggle('primary', isEraser);
+        }
+
+        // Mettre à jour l'indicateur d'outil
+        function updateToolIndicator() {
+            const toolPreview = document.getElementById('tool-preview');
+            const toolName = document.getElementById('tool-name');
+            
+            if (currentStamp) {
+                toolPreview.className = 'tool-preview stamp';
+                toolPreview.textContent = currentStamp;
+                toolName.textContent = `Tampon ${currentStamp}`;
+            } else if (isEraser) {
+                toolPreview.className = 'tool-preview eraser';
+                toolPreview.textContent = '';
+                toolName.textContent = `Gomme (${brushSize}px)`;
+            } else {
+                const colorName = colors.find(c => c.value === currentColor)?.name || 'Couleur';
+                toolPreview.className = 'tool-preview brush';
+                toolPreview.style.backgroundColor = currentColor;
+                toolPreview.textContent = '';
+                toolName.textContent = `${colorName} (${brushSize}px)`;
+            }
+        }
+
+        // Basculer la gomme
+        function toggleEraser() {
+            isEraser = !isEraser;
+            if (isEraser) {
+                currentStamp = null;
+            }
+            updateTools();
+            updateToolIndicator();
+        }
+
+        // Démarrer le dessin
+        function startDrawing(e) {
+            e.preventDefault();
+            isDrawing = true;
+            
+            const pos = getMousePos(e);
+            lastX = pos.x;
+            lastY = pos.y;
+            
+            if (currentStamp) {
+                drawStamp(pos.x, pos.y);
+                isDrawing = false;
+            } else {
+                ctx.beginPath();
+                ctx.moveTo(lastX, lastY);
+            }
+        }
+
+        // Dessiner
+        function draw(e) {
+            e.preventDefault();
+            if (!isDrawing || currentStamp) return;
+            
+            const pos = getMousePos(e);
+            
+            ctx.strokeStyle = isEraser ? '#FFFFFF' : currentColor;
+            ctx.lineWidth = brushSize;
+            
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+            
+            lastX = pos.x;
+            lastY = pos.y;
+        }
+
+        // Arrêter le dessin
+        function stopDrawing() {
+            isDrawing = false;
+            ctx.beginPath();
+        }
+
+        // Dessiner un tampon
+        function drawStamp(x, y) {
+            ctx.font = `${brushSize * 4}px Arial`;
+            ctx.fillStyle = currentColor;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(currentStamp, x, y);
+        }
+
+        // Obtenir la position de la souris/toucher
+        function getMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            let x, y;
+            
+            if (e.touches) {
+                x = e.touches[0].clientX - rect.left;
+                y = e.touches[0].clientY - rect.top;
+            } else {
+                x = e.clientX - rect.left;
+                y = e.clientY - rect.top;
+            }
+            
+            // Adapter à la taille du canvas
+            x = x * (canvas.width / rect.width);
+            y = y * (canvas.height / rect.height);
+            
+            return { x, y };
+        }
+
+        // Gérer le toucher (pour mobile)
+        function handleTouchStart(e) {
+            e.preventDefault();
+            startDrawing(e.touches[0]);
+        }
+
+        function handleTouchMove(e) {
+            e.preventDefault();
+            if (isDrawing) {
+                draw(e.touches[0]);
+            }
+        }
+
+        // Effacer le canvas
+        function clearCanvas() {
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        // Sauvegarder le dessin
+        function saveDrawing() {
+            const dataUrl = canvas.toDataURL('image/png');
+            saveToLocalStorage(dataUrl);
+            showToast('🎨 Dessin sauvegardé !');
+        }
+
+        // Télécharger le dessin
+        function downloadDrawing() {
+            const dataUrl = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.download = `dessin-${Date.now()}.png`;
+            link.href = dataUrl;
+            link.click();
+            showToast('📥 Dessin téléchargé !');
+        }
+
+        // Sauvegarder dans le localStorage
+        function saveToLocalStorage(dataUrl) {
+            // Récupérer les dessins existants
+            let drawings = JSON.parse(localStorage.getItem('childDrawings') || '[]');
+            
+            // Ajouter le nouveau dessin
+            const newDrawing = {
+                id: Date.now().toString(),
+                data: dataUrl,
+                date: new Date().toISOString(),
+                type: 'image'
+            };
+            
+            drawings.push(newDrawing);
+            
+            // Limiter à 20 dessins maximum
+            if (drawings.length > 20) {
+                drawings = drawings.slice(-20);
+            }
+            
+            // Sauvegarder
+            localStorage.setItem('childDrawings', JSON.stringify(drawings));
+        }
+
+        // Afficher un toast
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastEmoji = document.getElementById('toast-emoji');
+            const toastMessage = document.getElementById('toast-message');
+            
+            toastEmoji.textContent = message.match(/[\p{Emoji}]/u)?.[0] || '🎨';
+            toastMessage.textContent = message;
+            
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

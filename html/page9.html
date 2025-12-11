@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ma Galerie</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #4a6fa5;
+            --primary-foreground: #ffffff;
+            --primary-hover: #3a5a8c;
+            --secondary: #6c757d;
+            --success: #10b981;
+            --background: #f8f9fa;
+            --foreground: #1a1a1a;
+            --card: #ffffff;
+            --border: #e0e0e0;
+            --muted: #f1f5f9;
+            --muted-foreground: #64748b;
+            --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-medium: 0 8px 24px rgba(0, 0, 0, 0.12);
+            --shadow-glow: 0 8px 32px rgba(74, 111, 165, 0.2);
+            --border-radius: 1rem;
+            --border-radius-lg: 1.5rem;
+            --border-radius-xl: 2rem;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            color: var(--foreground);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .header-emoji {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            display: block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--foreground);
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: var(--secondary);
+        }
+
+        /* Grille de dessins */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .gallery-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .gallery-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* Carte de dessin */
+        .drawing-card {
+            background-color: var(--card);
+            border-radius: var(--border-radius-xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-medium);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            animation: slideUp 0.5s ease;
+        }
+
+        .drawing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-glow);
+            border-color: rgba(74, 111, 165, 0.2);
+        }
+
+        .drawing-image {
+            width: 100%;
+            aspect-ratio: 4/3;
+            object-fit: cover;
+            background: linear-gradient(135deg, #e0f2fe, #dbeafe);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .drawing-placeholder {
+            font-size: 4rem;
+            color: var(--primary);
+            opacity: 0.5;
+        }
+
+        .drawing-info {
+            padding: 1.5rem;
+        }
+
+        .drawing-date {
+            font-size: 0.875rem;
+            color: var(--muted-foreground);
+            margin-bottom: 1rem;
+        }
+
+        /* Bouton télécharger */
+        .download-btn {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: var(--border-radius-lg);
+            border: 2px solid var(--border);
+            background-color: transparent;
+            color: var(--foreground);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .download-btn:hover {
+            border-color: var(--primary);
+            background-color: rgba(74, 111, 165, 0.05);
+            transform: scale(1.02);
+        }
+
+        /* Message vide */
+        .empty-gallery {
+            background-color: var(--card);
+            border-radius: var(--border-radius-xl);
+            padding: 3rem;
+            text-align: center;
+            max-width: 28rem;
+            margin: 0 auto;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid var(--border);
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            display: block;
+            color: var(--muted-foreground);
+        }
+
+        .empty-gallery h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--foreground);
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-gallery p {
+            font-size: 1rem;
+            color: var(--muted-foreground);
+            margin-bottom: 2rem;
+        }
+
+        .create-btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius-lg);
+            border: none;
+            background-color: var(--primary);
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .create-btn:hover {
+            background-color: var(--primary-hover);
+            transform: scale(1.05);
+            box-shadow: var(--shadow-glow);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background-color: var(--success);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-medium);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast-emoji {
+            font-size: 1.25rem;
+        }
+
+        /* Animations CSS */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- En-tête -->
+        <div class="header">
+            <span class="header-emoji">🖼️</span>
+            <h1>Ma Galerie</h1>
+            <p>Toutes mes créations</p>
+        </div>
+
+        <!-- Galerie de dessins -->
+        <div id="gallery-container">
+            <!-- Les dessins seront générés dynamiquement -->
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <span class="toast-emoji" id="toast-emoji">📥</span>
+        <span id="toast-message">Dessin téléchargé !</span>
+    </div>
+
+    <script>
+        // Exemples de dessins (remplacés par des emojis pour la démo)
+        const sampleDrawings = [
+            {
+                id: '1',
+                data: '🎨',
+                date: new Date(Date.now() - 86400000 * 2).toISOString(), // Il y a 2 jours
+                type: 'emoji'
+            },
+            {
+                id: '2',
+                data: '🌈',
+                date: new Date(Date.now() - 86400000 * 3).toISOString(), // Il y a 3 jours
+                type: 'emoji'
+            },
+            {
+                id: '3',
+                data: '🐱',
+                date: new Date(Date.now() - 86400000 * 5).toISOString(), // Il y a 5 jours
+                type: 'emoji'
+            },
+            {
+                id: '4',
+                data: '🏠',
+                date: new Date(Date.now() - 86400000 * 7).toISOString(), // Il y a 7 jours
+                type: 'emoji'
+            },
+            {
+                id: '5',
+                data: '🌻',
+                date: new Date(Date.now() - 86400000 * 10).toISOString(), // Il y a 10 jours
+                type: 'emoji'
+            },
+            {
+                id: '6',
+                data: '🚀',
+                date: new Date(Date.now() - 86400000 * 12).toISOString(), // Il y a 12 jours
+                type: 'emoji'
+            }
+        ];
+
+        // État de l'application
+        let drawings = [];
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDrawings();
+            renderGallery();
+        });
+
+        // Charger les dessins depuis localStorage
+        function loadDrawings() {
+            const savedDrawings = localStorage.getItem('childDrawings');
+            if (savedDrawings) {
+                drawings = JSON.parse(savedDrawings);
+            } else {
+                // Utiliser les exemples pour la démo
+                drawings = sampleDrawings;
+                saveDrawings();
+            }
+        }
+
+        // Sauvegarder les dessins dans localStorage
+        function saveDrawings() {
+            localStorage.setItem('childDrawings', JSON.stringify(drawings));
+        }
+
+        // Ajouter un nouveau dessin (pour la démo)
+        function addDrawing() {
+            const newDrawing = {
+                id: Date.now().toString(),
+                data: getRandomEmoji(),
+                date: new Date().toISOString(),
+                type: 'emoji'
+            };
+            
+            drawings.unshift(newDrawing); // Ajouter au début
+            saveDrawings();
+            renderGallery();
+            showToast('🎨 Nouveau dessin ajouté !');
+        }
+
+        // Obtenir un emoji aléatoire
+        function getRandomEmoji() {
+            const emojis = ['🎨', '🌈', '🐱', '🐶', '🐰', '🐻', '🐼', '🐯', '🦁', '🐮', '🐷', '🐸', '🐵', '🐔', '🐧', '🐦', '🐤', '🦆', '🦉', '🦇', '🐺', '🐗', '🐴', '🦄', '🐝', '🐛', '🦋', '🐌', '🐞', '🐜', '🦟', '🦗', '🕷️', '🦂', '🐢', '🐍', '🦎', '🦖', '🦕', '🐙', '🦑', '🦐', '🦞', '🦀', '🐡', '🐠', '🐟', '🐬', '🐳', '🐋', '🦈', '🐊', '🐅', '🐆', '🦓', '🦍', '🦧', '🐘', '🦛', '🦏', '🐪', '🐫', '🦒', '🦘', '🐃', '🐂', '🐄', '🐎', '🐖', '🐏', '🐑', '🦙', '🐐', '🦌', '🐕', '🐩', '🦮', '🐕‍🦺', '🐈', '🐈‍⬛', '🦤', '🦢', '🦜', '🦩', '🦚', '🦃', '🦨', '🦡', '🦦', '🦥', '🐁', '🐀', '🐿️', '🦔', '🌺', '🌸', '🌼', '🌻', '🌹', '🥀', '🌷', '💐', '🍄', '🌰', '🎃', '🎄', '🎆', '🎇', '🧨', '✨', '🎈', '🎉', '🎊', '🎁', '🎀', '🏮', '🧧', '🪔', '🎎', '🎏', '🎐', '🎑', '🧿', '🎭', '🖼️', '🎨'];
+            return emojis[Math.floor(Math.random() * emojis.length)];
+        }
+
+        // Afficher la galerie
+        function renderGallery() {
+            const container = document.getElementById('gallery-container');
+            
+            if (drawings.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-gallery">
+                        <span class="empty-icon">🎨</span>
+                        <h2>Pas encore de dessins</h2>
+                        <p>Va dans l'atelier dessin pour créer ta première œuvre d'art !</p>
+                        <button class="create-btn" onclick="addDrawing()">
+                            <span>➕</span>
+                            Créer un dessin (démo)
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            // Trier par date (plus récent en premier)
+            const sortedDrawings = [...drawings].sort((a, b) => 
+                new Date(b.date) - new Date(a.date)
+            );
+
+            container.innerHTML = `
+                <div class="gallery-grid">
+                    ${sortedDrawings.map((drawing, index) => `
+                        <div class="drawing-card" style="animation-delay: ${index * 0.1}s">
+                            <div class="drawing-image">
+                                <span class="drawing-placeholder">${drawing.data}</span>
+                            </div>
+                            <div class="drawing-info">
+                                <div class="drawing-date">
+                                    ${formatDate(drawing.date)}
+                                </div>
+                                <button class="download-btn" onclick="downloadDrawing(${index})">
+                                    <span>📥</span>
+                                    Télécharger
+                                </button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // Télécharger un dessin
+        function downloadDrawing(index) {
+            const drawing = drawings[index];
+            
+            // Pour les emojis, créer une image basique
+            if (drawing.type === 'emoji') {
+                // Créer un canvas pour l'emoji
+                const canvas = document.createElement('canvas');
+                canvas.width = 400;
+                canvas.height = 300;
+                const ctx = canvas.getContext('2d');
+                
+                // Fond
+                ctx.fillStyle = '#f0f9ff';
+                ctx.fillRect(0, 0, 400, 300);
+                
+                // Ajouter un dégradé
+                const gradient = ctx.createLinearGradient(0, 0, 400, 300);
+                gradient.addColorStop(0, '#e0f2fe');
+                gradient.addColorStop(1, '#dbeafe');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(20, 20, 360, 260);
+                
+                // Dessiner l'emoji
+                ctx.font = '150px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = '#4a6fa5';
+                ctx.fillText(drawing.data, 200, 150);
+                
+                // Ajouter un texte
+                ctx.font = '20px Arial';
+                ctx.fillStyle = '#6c757d';
+                ctx.fillText(`Dessin créé le ${formatDate(drawing.date)}`, 200, 250);
+                
+                // Convertir en URL
+                const dataUrl = canvas.toDataURL('image/png');
+                
+                // Créer un lien de téléchargement
+                const link = document.createElement('a');
+                link.download = `dessin-${index + 1}.png`;
+                link.href = dataUrl;
+                link.click();
+                
+                showToast('📥 Dessin téléchargé !');
+            }
+        }
+
+        // Formater la date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffTime = Math.abs(now - date);
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 0) {
+                return "Aujourd'hui";
+            } else if (diffDays === 1) {
+                return 'Hier';
+            } else if (diffDays < 7) {
+                return `Il y a ${diffDays} jours`;
+            } else {
+                return date.toLocaleDateString('fr-FR', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                });
+            }
+        }
+
+        // Afficher un toast
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastEmoji = document.getElementById('toast-emoji');
+            const toastMessage = document.getElementById('toast-message');
+            
+            toastEmoji.textContent = message.match(/[\p{Emoji}]/u)?.[0] || '📥';
+            toastMessage.textContent = message;
+            
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Fonction pour ajouter des dessins depuis un atelier dessin (à intégrer)
+        window.addDrawingFromWorkshop = function(emoji) {
+            const newDrawing = {
+                id: Date.now().toString(),
+                data: emoji,
+                date: new Date().toISOString(),
+                type: 'emoji'
+            };
+            
+            drawings.unshift(newDrawing);
+            saveDrawings();
+            renderGallery();
+            showToast('🎨 Nouveau dessin ajouté à la galerie !');
+        };
+    </script>
+</body>
+</html>

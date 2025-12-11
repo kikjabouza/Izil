@@ -1,3 +1,64 @@
+<<<<<<< HEAD
 h1{
   color: black;
 }
+=======
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #eef7f9;
+}
+
+/* NAVBAR */
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: #6BC6C6;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    z-index: 999;
+}
+
+.navbar ul {
+    display: flex;
+    gap: 20px;
+}
+
+.navbar a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+}
+
+.section {
+    padding: 120px 40px;
+    min-height: 100vh;
+}
+
+/* HERO */
+.hero {
+    background: #A0E7E5;
+    text-align: center;
+}
+
+/* GALLERY */
+.gallery {
+    display: flex;
+    gap: 20px;
+}
+
+.photo {
+    width: 200px;
+    height: 150px;
+    background: #ccc;
+    border-radius: 10px;
+}
+>>>>>>> 1bd40daf10a55ec82b4256ac955e068cd6ad7b32

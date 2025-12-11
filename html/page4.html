@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace Calme - Relaxation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #4a6fa5;
+            --primary-foreground: #ffffff;
+            --primary-hover: #3a5a8c;
+            --lavender: #9d8df1;
+            --mint: #88d9e6;
+            --peach: #ffb8a1;
+            --sunshine: #ffd166;
+            --blue-400: #60a5fa;
+            --green-400: #4ade80;
+            --sky-300: #7dd3fc;
+            --background: #f8f9fa;
+            --foreground: #1a1a1a;
+            --muted: #6c757d;
+            --muted-foreground: #6c757d;
+            --card: #ffffff;
+            --card-foreground: #1a1a1a;
+            --border: #e0e0e0;
+            --border-hover: #d0d0d0;
+            --indigo-900: #312e81;
+            --purple-900: #581c87;
+            --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-medium: 0 8px 24px rgba(0, 0, 0, 0.12);
+            --shadow-glow: 0 8px 32px rgba(74, 111, 165, 0.2);
+            --border-radius: 1rem;
+            --border-radius-lg: 1.5rem;
+            --border-radius-xl: 2rem;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            color: var(--foreground);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .header-emoji {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            display: block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--foreground);
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: var(--muted-foreground);
+        }
+
+        /* Sélecteur de thème */
+        .theme-selector {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 768px) {
+            .theme-selector {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .theme-btn {
+            padding: 1.5rem;
+            border-radius: var(--border-radius-xl);
+            border: 2px solid var(--border);
+            background-color: var(--card);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+            color: var(--foreground);
+            text-align: center;
+        }
+
+        .theme-btn:hover {
+            transform: scale(1.05);
+            border-color: rgba(74, 111, 165, 0.5);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .theme-btn.active {
+            border-color: transparent;
+            box-shadow: var(--shadow-glow);
+            color: white;
+        }
+
+        .theme-btn.active.blue-400 { background-color: var(--blue-400); }
+        .theme-btn.active.green-400 { background-color: var(--green-400); }
+        .theme-btn.active.sky-300 { background-color: var(--sky-300); }
+        .theme-btn.active.lavender { background-color: var(--lavender); }
+
+        .theme-emoji {
+            font-size: 2.5rem;
+        }
+
+        /* Carte d'exercice de respiration */
+        .card {
+            background-color: var(--card);
+            border-radius: var(--border-radius-xl);
+            padding: 2rem;
+            box-shadow: var(--shadow-medium);
+            border: 1px solid var(--border);
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-glow);
+            border-color: rgba(74, 111, 165, 0.2);
+        }
+
+        .card h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--foreground);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        /* Exercice de respiration */
+        .breathing-container {
+            position: relative;
+            width: 16rem;
+            height: 16rem;
+            margin: 0 auto 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .breathing-container {
+                width: 20rem;
+                height: 20rem;
+            }
+        }
+
+        .breathing-bg {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background-color: rgba(74, 111, 165, 0.1);
+        }
+
+        .breathing-circle {
+            position: absolute;
+            inset: 1rem;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--lavender));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+            font-weight: 500;
+        }
+
+        .breathing-circle.breathing {
+            animation: breathing 4s ease-in-out infinite;
+        }
+
+        .breathing-circle.inhale {
+            background: linear-gradient(135deg, #4a6fa5, #7dd3fc);
+        }
+
+        .breathing-circle.hold {
+            background: linear-gradient(135deg, #7dd3fc, #9d8df1);
+        }
+
+        .breathing-circle.exhale {
+            background: linear-gradient(135deg, #9d8df1, #4a6fa5);
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        /* Boutons */
+        .btn {
+            padding: 0.875rem 1.75rem;
+            border-radius: var(--border-radius-lg);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 2px solid transparent;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: scale(1.05);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border-color: var(--border);
+            color: var(--foreground);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            background-color: rgba(74, 111, 165, 0.05);
+            transform: scale(1.05);
+        }
+
+        /* Animations apaisantes */
+        .animations-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .animations-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .animation-box {
+            aspect-ratio: 16/9;
+            border-radius: var(--border-radius-lg);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .ocean-waves {
+            background: linear-gradient(to bottom, #e0f2fe, #60a5fa);
+        }
+
+        .floating-clouds {
+            background: linear-gradient(to bottom, #f0f9ff, #bae6fd);
+        }
+
+        .fireflies {
+            background: linear-gradient(to bottom, var(--indigo-900), var(--purple-900));
+        }
+
+        .wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            border-radius: 50% 50% 0 0;
+        }
+
+        .wave-1 {
+            height: 33%;
+            background-color: rgba(37, 99, 235, 0.5);
+        }
+
+        .wave-2 {
+            height: 25%;
+            background-color: rgba(29, 78, 216, 0.5);
+        }
+
+        .center-emoji {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+        }
+
+        .floating-emoji {
+            position: absolute;
+            font-size: 2.5rem;
+        }
+
+        .moon {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 2.5rem;
+        }
+
+        .firefly {
+            position: absolute;
+            font-size: 1.5rem;
+        }
+
+        /* Animations CSS */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes breathing {
+            0%, 100% {
+                transform: scale(1);
+            }
+            33% {
+                transform: scale(1.3);
+            }
+            66% {
+                transform: scale(1.3);
+            }
+        }
+
+        @keyframes waveMove1 {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            50% {
+                transform: translateX(20px);
+            }
+        }
+
+        @keyframes waveMove2 {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            50% {
+                transform: translateX(-15px);
+            }
+        }
+
+        @keyframes cloudMove1 {
+            0% {
+                transform: translateX(-50px);
+            }
+            100% {
+                transform: translateX(200px);
+            }
+        }
+
+        @keyframes cloudMove2 {
+            0% {
+                transform: translateX(200px);
+            }
+            100% {
+                transform: translateX(-50px);
+            }
+        }
+
+        @keyframes firefly {
+            0%, 100% {
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+
+        .wave-1 {
+            animation: waveMove1 3s ease-in-out infinite;
+        }
+
+        .wave-2 {
+            animation: waveMove2 2.5s ease-in-out infinite 0.5s;
+        }
+
+        .cloud1 {
+            animation: cloudMove1 8s linear infinite;
+        }
+
+        .cloud2 {
+            animation: cloudMove2 10s linear infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- En-tête -->
+        <div class="header">
+            <span class="header-emoji">🧘</span>
+            <h1>Espace Calme</h1>
+            <p>Prends un moment pour te détendre</p>
+        </div>
+
+        <!-- Sélecteur de thème -->
+        <div class="theme-selector" id="theme-selector">
+            <!-- Les boutons de thème seront générés par JavaScript -->
+        </div>
+
+        <!-- Exercice de respiration -->
+        <div class="card">
+            <h2>Exercice de Respiration</h2>
+            
+            <div class="breathing-container">
+                <div class="breathing-bg"></div>
+                <div class="breathing-circle" id="breathing-circle">
+                    Prêt ?
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-primary" id="start-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    Commencer
+                </button>
+                <button class="btn btn-outline" id="pause-btn" style="display: none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="6" y="4" width="4" height="16"></rect>
+                        <rect x="14" y="4" width="4" height="16"></rect>
+                    </svg>
+                    Pause
+                </button>
+            </div>
+        </div>
+
+        <!-- Animations apaisantes -->
+        <div class="card">
+            <h2>Animations Apaisantes</h2>
+            
+            <div class="animations-grid">
+                <!-- Vagues océan -->
+                <div class="animation-box ocean-waves">
+                    <div class="wave wave-1"></div>
+                    <div class="wave wave-2"></div>
+                    <span class="center-emoji">🌊</span>
+                </div>
+
+                <!-- Nuages flottants -->
+                <div class="animation-box floating-clouds">
+                    <span class="floating-emoji cloud1" style="top: 1rem;">☁️</span>
+                    <span class="floating-emoji cloud2" style="top: 3rem;">☁️</span>
+                    <span class="center-emoji" style="bottom: 1rem; top: auto; transform: translateX(-50%);">🌤️</span>
+                </div>
+
+                <!-- Lucioles -->
+                <div class="animation-box fireflies" id="fireflies-container">
+                    <span class="moon">🌙</span>
+                    <!-- Les lucioles seront générées par JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Données des thèmes
+        const themes = [
+            { id: 'ocean', label: 'Océan', color: 'blue-400', emoji: '🌊' },
+            { id: 'forest', label: 'Forêt', color: 'green-400', emoji: '🌲' },
+            { id: 'sky', label: 'Nuages', color: 'sky-300', emoji: '☁️' },
+            { id: 'breath', label: 'Respiration', color: 'lavender', emoji: '💨' },
+        ];
+
+        // État de l'application
+        let currentTheme = 'ocean';
+        let isBreathing = false;
+        let breathPhase = 'inhale';
+        let breathingInterval = null;
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            initThemeSelector();
+            initFireflies();
+            setupEventListeners();
+        });
+
+        // Initialiser le sélecteur de thème
+        function initThemeSelector() {
+            const container = document.getElementById('theme-selector');
+            
+            themes.forEach(theme => {
+                const button = document.createElement('button');
+                button.className = `theme-btn ${currentTheme === theme.id ? 'active ' + theme.color : ''}`;
+                button.innerHTML = `
+                    <span class="theme-emoji">${theme.emoji}</span>
+                    <span>${theme.label}</span>
+                `;
+                
+                button.addEventListener('click', () => {
+                    // Retirer la classe active de tous les boutons
+                    document.querySelectorAll('.theme-btn').forEach(btn => {
+                        btn.classList.remove('active', 'blue-400', 'green-400', 'sky-300', 'lavender');
+                    });
+                    
+                    // Ajouter la classe active au bouton cliqué
+                    button.classList.add('active', theme.color);
+                    currentTheme = theme.id;
+                });
+                
+                container.appendChild(button);
+            });
+        }
+
+        // Initialiser les lucioles
+        function initFireflies() {
+            const container = document.getElementById('fireflies-container');
+            
+            // Créer 6 lucioles
+            for (let i = 0; i < 6; i++) {
+                const firefly = document.createElement('span');
+                firefly.className = 'firefly';
+                firefly.textContent = '✨';
+                
+                // Position aléatoire
+                const left = Math.random() * 80 + 10;
+                const top = Math.random() * 60 + 20;
+                
+                firefly.style.left = `${left}%`;
+                firefly.style.top = `${top}%`;
+                
+                // Animation aléatoire
+                const duration = 2 + Math.random() * 2;
+                const delay = Math.random() * 2;
+                
+                firefly.style.animation = `firefly ${duration}s ease-in-out ${delay}s infinite`;
+                
+                container.appendChild(firefly);
+            }
+
+            // Ajouter l'animation CSS pour les lucioles
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes firefly {
+                    0%, 100% {
+                        opacity: 0.3;
+                        transform: scale(0.8) translate(0, 0);
+                    }
+                    50% {
+                        opacity: 1;
+                        transform: scale(1.2) translate(${Math.random() * 20 - 10}px, ${Math.random() * 20 - 10}px);
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        // Configurer les écouteurs d'événements
+        function setupEventListeners() {
+            // Bouton de démarrage
+            document.getElementById('start-btn').addEventListener('click', startBreathingExercise);
+            
+            // Bouton de pause
+            document.getElementById('pause-btn').addEventListener('click', stopBreathingExercise);
+        }
+
+        // Démarrer l'exercice de respiration
+        function startBreathingExercise() {
+            isBreathing = true;
+            
+            // Changer l'affichage des boutons
+            document.getElementById('start-btn').style.display = 'none';
+            document.getElementById('pause-btn').style.display = 'flex';
+            
+            // Démarrer le cycle
+            runBreathingCycle();
+        }
+
+        // Arrêter l'exercice de respiration
+        function stopBreathingExercise() {
+            isBreathing = false;
+            
+            // Changer l'affichage des boutons
+            document.getElementById('start-btn').style.display = 'flex';
+            document.getElementById('pause-btn').style.display = 'none';
+            
+            // Arrêter l'animation
+            const circle = document.getElementById('breathing-circle');
+            circle.classList.remove('breathing', 'inhale', 'hold', 'exhale');
+            circle.textContent = 'Prêt ?';
+            
+            // Arrêter l'intervalle
+            if (breathingInterval) {
+                clearInterval(breathingInterval);
+                breathingInterval = null;
+            }
+        }
+
+        // Exécuter le cycle de respiration
+        function runBreathingCycle() {
+            if (!isBreathing) return;
+            
+            const circle = document.getElementById('breathing-circle');
+            circle.classList.add('breathing');
+            
+            // Phase d'inspiration (4 secondes)
+            breathPhase = 'inhale';
+            circle.classList.remove('hold', 'exhale');
+            circle.classList.add('inhale');
+            circle.textContent = 'Inspire... 🌬️';
+            
+            setTimeout(() => {
+                if (!isBreathing) return;
+                
+                // Phase de rétention (4 secondes)
+                breathPhase = 'hold';
+                circle.classList.remove('inhale', 'exhale');
+                circle.classList.add('hold');
+                circle.textContent = 'Retiens... ⏸️';
+                
+                setTimeout(() => {
+                    if (!isBreathing) return;
+                    
+                    // Phase d'expiration (4 secondes)
+                    breathPhase = 'exhale';
+                    circle.classList.remove('inhale', 'hold');
+                    circle.classList.add('exhale');
+                    circle.textContent = 'Expire... 💨';
+                    
+                    setTimeout(() => {
+                        if (isBreathing) {
+                            runBreathingCycle(); // Recommencer le cycle
+                        }
+                    }, 4000);
+                }, 4000);
+            }, 4000);
+        }
+
+        // Fonction pour obtenir le texte de la phase de respiration
+        function getBreathText() {
+            switch (breathPhase) {
+                case 'inhale':
+                    return 'Inspire... 🌬️';
+                case 'hold':
+                    return 'Retiens... ⏸️';
+                case 'exhale':
+                    return 'Expire... 💨';
+                default:
+                    return 'Prêt ?';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MonEspace - Authentification</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&display=swap');
+
+        :root {
+            --background: hsl(200, 30%, 98%);
+            --foreground: hsl(220, 25%, 25%);
+            --card: hsl(0, 0%, 100%);
+            --card-foreground: hsl(220, 25%, 25%);
+            --primary: hsl(200, 70%, 55%);
+            --primary-foreground: hsl(0, 0%, 100%);
+            --secondary: hsl(160, 40%, 92%);
+            --secondary-foreground: hsl(160, 40%, 35%);
+            --muted: hsl(40, 30%, 96%);
+            --muted-foreground: hsl(220, 15%, 50%);
+            --border: hsl(200, 20%, 88%);
+            --calm-blue-light: hsl(200, 70%, 92%);
+            --mint-green-light: hsl(160, 50%, 92%);
+            --lavender: hsl(270, 50%, 70%);
+            --lavender-light: hsl(270, 50%, 95%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, var(--calm-blue-light) 0%, var(--lavender-light) 50%, var(--mint-green-light) 100%);
+            color: var(--foreground);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        /* Floating Bubbles */
+        .bubbles {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            animation: float-up linear infinite;
+        }
+
+        @keyframes float-up {
+            from { transform: translateY(110vh); }
+            to { transform: translateY(-20vh); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+
+        /* Auth Container */
+        .auth-container {
+            width: 100%;
+            max-width: 480px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* Back Button */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            margin-bottom: 1rem;
+            background: transparent;
+            border: none;
+            border-radius: 12px;
+            color: var(--foreground);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Card */
+        .auth-card {
+            background: var(--card);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            border: 1px solid rgba(200, 215, 230, 0.3);
+        }
+
+        /* Header */
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--lavender));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 1rem;
+            animation: scaleIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .auth-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-subtitle {
+            color: var(--muted-foreground);
+            margin-bottom: 0.5rem;
+        }
+
+        .speak-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            padding: 0.5rem;
+            margin-top: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .speak-btn:hover {
+            background: rgba(90, 155, 203, 0.1);
+            transform: scale(1.1);
+        }
+
+        /* Role Selection */
+        .role-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .role-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .role-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .role-btn {
+            padding: 1rem;
+            border-radius: 16px;
+            border: 2px solid var(--border);
+            background: var(--card);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .role-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .role-btn.active {
+            border-color: var(--primary);
+            background: rgba(90, 155, 203, 0.1);
+        }
+
+        .role-emoji {
+            font-size: 2rem;
+        }
+
+        .role-text {
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        /* Form */
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted-foreground);
+            pointer-events: none;
+        }
+
+        .form-input {
+            width: 100%;
+            height: 56px;
+            padding-left: 3rem;
+            padding-right: 1rem;
+            border-radius: 16px;
+            border: 2px solid var(--border);
+            background: var(--background);
+            font-family: inherit;
+            font-size: 1.125rem;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-input.with-toggle {
+            padding-right: 3rem;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--muted-foreground);
+            padding: 0.5rem;
+        }
+
+        .forgot-password {
+            text-align: right;
+        }
+
+        .forgot-link {
+            font-size: 0.875rem;
+            color: var(--primary);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .forgot-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Submit Button */
+        .submit-btn {
+            width: 100%;
+            height: 56px;
+            padding: 0 2rem;
+            border-radius: 16px;
+            background: var(--primary);
+            color: var(--primary-foreground);
+            border: none;
+            font-family: inherit;
+            font-size: 1.125rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(90, 155, 203, 0.3);
+        }
+
+        .submit-btn:active:not(:disabled) {
+            transform: scale(0.95);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Toggle Mode */
+        .toggle-mode {
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+
+        .toggle-text {
+            color: var(--muted-foreground);
+            margin-bottom: 0.5rem;
+        }
+
+        .mode-link {
+            color: var(--primary);
+            font-weight: 600;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+
+        .mode-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Icons */
+        svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: var(--card);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: slideIn 0.3s ease-out;
+            z-index: 1000;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast.success {
+            border-left: 4px solid #10b981;
+        }
+
+        .toast-icon {
+            font-size: 1.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .auth-card {
+                padding: 1.5rem;
+            }
+
+            .role-buttons {
+                gap: 0.5rem;
+            }
+
+            .role-btn {
+                padding: 0.75rem;
+            }
+
+            .role-emoji {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Hidden class */
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Bubbles -->
+    <div class="bubbles" id="bubbles"></div>
+
+    <!-- Auth Container -->
+    <div class="auth-container">
+        <button class="back-btn" onclick="goBack()">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            <span>Retour</span>
+        </button>
+
+        <div class="auth-card">
+            <!-- Header -->
+            <div class="auth-header">
+                <div class="logo-icon">🌈</div>
+                <h1 class="auth-title" id="authTitle">Connexion</h1>
+                <p class="auth-subtitle" id="authSubtitle">Bienvenue ! Connectez-vous à votre compte.</p>
+                <button class="speak-btn" onclick="speakText()" aria-label="Lire à voix haute">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 24px; height: 24px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Role Selection -->
+            <div class="role-section">
+                <label class="role-label">Je suis :</label>
+                <div class="role-buttons">
+                    <button class="role-btn active" data-role="accompagnant" onclick="selectRole('accompagnant')">
+                        <span class="role-emoji">👨‍👩‍👧</span>
+                        <span class="role-text">Accompagnant</span>
+                    </button>
+                    <button class="role-btn" data-role="enfant" onclick="selectRole('enfant')">
+                        <span class="role-emoji">🧒</span>
+                        <span class="role-text">Enfant</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Form -->
+            <form class="auth-form" onsubmit="handleSubmit(event)">
+                <!-- Name (only for register) -->
+                <div class="form-group hidden" id="nameGroup">
+                    <label class="form-label">Nom</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        </svg>
+                        <input type="text" id="nameInput" class="form-input" placeholder="Votre nom">
+                    </div>
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                        <input type="email" id="emailInput" class="form-input" placeholder="votre@email.com" required>
+                    </div>
+                </div>
+
+                <!-- Password -->
+                <div class="form-group">
+                    <label class="form-label">Mot de passe</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                        <input type="password" id="passwordInput" class="form-input with-toggle" placeholder="••••••••" required>
+                        <button type="button" class="toggle-password" onclick="togglePassword()">
+                            <svg id="eyeIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Forgot Password (only for login) -->
+                <div class="forgot-password" id="forgotPassword">
+                    <a class="forgot-link">Mot de passe oublié ?</a>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    Se connecter
+                </button>
+            </form>
+
+            <!-- Toggle Mode -->
+            <div class="toggle-mode">
+                <p class="toggle-text" id="toggleText">Pas encore de compte ?</p>
+                <button class="mode-link" onclick="toggleMode()" id="modeLink">S'inscrire</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentMode = 'login';
+        let currentRole = 'accompagnant';
+        let isLoading = false;
+
+        // Generate floating bubbles
+        function createBubbles() {
+            const bubblesContainer = document.getElementById('bubbles');
+            const colors = [
+                'rgba(90, 155, 203, 0.15)',
+                'rgba(102, 194, 165, 0.15)',
+                'rgba(149, 125, 173, 0.15)',
+                'rgba(230, 126, 97, 0.12)',
+                'rgba(242, 201, 76, 0.12)'
+            ];
+
+            for (let i = 0; i < 8; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                const size = Math.random() * 150 + 50;
+                bubble.style.width = size + 'px';
+                bubble.style.height = size + 'px';
+                bubble.style.left = Math.random() * 100 + '%';
+                bubble.style.background = colors[Math.floor(Math.random() * colors.length)];
+                bubble.style.animationDuration = (Math.random() * 10 + 15) + 's';
+                bubble.style.animationDelay = Math.random() * 5 + 's';
+                bubblesContainer.appendChild(bubble);
+            }
+        }
+
+        // Select role
+        function selectRole(role) {
+            currentRole = role;
+            document.querySelectorAll('.role-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.role === role) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        // Toggle password visibility
+        function togglePassword() {
+            const passwordInput = document.getElementById('passwordInput');
+            const eyeIcon = document.getElementById('eyeIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>';
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>';
+            }
+        }
+
+        // Toggle between login and register
+        function toggleMode() {
+            currentMode = currentMode === 'login' ? 'register' : 'login';
+            
+            const authTitle = document.getElementById('authTitle');
+            const authSubtitle = document.getElementById('authSubtitle');
+            const nameGroup = document.getElementById('nameGroup');
+            const forgotPassword = document.getElementById('forgotPassword');
+            const submitBtn = document.getElementById('submitBtn');
+            const toggleText = document.getElementById('toggleText');
+            const modeLink = document.getElementById('modeLink');
+
+            if (currentMode === 'register') {
+                authTitle.textContent = 'Inscription';
+                authSubtitle.textContent = 'Créez votre compte pour commencer.';
+                nameGroup.classList.remove('hidden');
+                forgotPassword.classList.add('hidden');
+                submitBtn.textContent = "S'inscrire";
+                toggleText.textContent = 'Déjà un compte ?';
+                modeLink.textContent = 'Se connecter';
+            } else {
+                authTitle.textContent = 'Connexion';
+                authSubtitle.textContent = 'Bienvenue ! Connectez-vous à votre compte.';
+                nameGroup.classList.add('hidden');
+                forgotPassword.classList.remove('hidden');
+                submitBtn.textContent = 'Se connecter';
+                toggleText.textContent = 'Pas encore de compte ?';
+                modeLink.textContent = "S'inscrire";
+            }
+        }
+
+        // Speak text
+        function speakText() {
+            if ('speechSynthesis' in window) {
+                const text = currentMode === 'login' ? 'Page de connexion' : "Page d'inscription";
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'fr-FR';
+                utterance.rate = 0.9;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Show toast notification
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast success';
+            toast.innerHTML = `
+                <span class="toast-icon">✓</span>
+                <span>${message}</span>
+            `;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // Handle form submit
+        function handleSubmit(event) {
+            event.preventDefault();
+            
+            if (isLoading) return;
+            isLoading = true;
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Chargement...';
+
+            const email = document.getElementById('emailInput').value;
+            const password = document.getElementById('passwordInput').value;
+            const name = document.getElementById('nameInput').value || 'Utilisateur';
+
+            // Simulate API call
+            setTimeout(() => {
+                // Store auth data
+                const user = {
+                    id: '1',
+                    email: email,
+                    name: name,
+                    role: currentRole
+                };
+                localStorage.setItem('auth-storage', JSON.stringify({
+                    state: {
+                        user: user,
+                        isAuthenticated: true,
+                        currentSpace: null
+                    }
+                }));
+
+                showToast(currentMode === 'login' ? 'Connexion réussie !' : 'Compte créé avec succès !');
+
+                // Redirect based on role
+                setTimeout(() => {
+                    if (currentRole === 'accompagnant') {
+                        window.location.href = 'questionnaire.html';
+                    } else {
+                        window.location.href = 'child-space.html';
+                    }
+                }, 1000);
+
+                isLoading = false;
+            }, 1000);
+        }
+
+        // Go back
+        function goBack() {
+            window.history.back();
+        }
+
+        // Initialize
+        createBubbles();
+    </script>
+</body>
+</html>

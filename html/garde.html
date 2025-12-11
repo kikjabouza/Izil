@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MonEspace - Espace pour enfants</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-light: #a5b4fc;
+            --peach: #fbbf24;
+            --peach-light: #fef3c7;
+            --mint: #10b981;
+            --mint-light: #d1fae5;
+            --lavender: #8b5cf6;
+            --lavender-light: #ede9fe;
+            --calm-blue: #3b82f6;
+            --calm-blue-light: #dbeafe;
+            --sunshine: #f59e0b;
+            --sunshine-light: #fef3c7;
+            --background: #ffffff;
+            --foreground: #1f2937;
+            --muted: #f3f4f6;
+            --muted-foreground: #6b7280;
+            --border: #e5e7eb;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #dbeafe 0%, #ede9fe 100%);
+            color: var(--foreground);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Navigation */
+        nav {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 1rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--lavender) 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--border);
+            color: var(--foreground);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            background: var(--muted);
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 2rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 8rem 2rem 4rem;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .hero .highlight {
+            color: var(--primary);
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--muted-foreground);
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-emoji {
+            font-size: 4rem;
+            margin-bottom: 2rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Features Grid */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 4rem 0;
+        }
+
+        .feature {
+            text-align: center;
+        }
+
+        .feature-icon {
+            width: 4rem;
+            height: 4rem;
+            border-radius: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 2rem;
+        }
+
+        /* Activity Grid */
+        .activities {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .activity-card {
+            text-align: center;
+            padding: 2rem;
+            border-radius: 2rem;
+            border: 2px solid var(--border);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .activity-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.2);
+        }
+
+        .activity-emoji {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 1rem;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Drawing Canvas */
+        #drawingCanvas {
+            border: 2px solid var(--border);
+            border-radius: 1rem;
+            cursor: crosshair;
+            background: white;
+            width: 100%;
+            max-width: 800px;
+            touch-action: none;
+        }
+
+        .color-palette {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+        }
+
+        .color-btn {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 0.75rem;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .color-btn.active {
+            border-color: var(--foreground);
+            transform: scale(1.1);
+        }
+
+        /* Mood Selection */
+        .mood-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .mood-btn {
+            padding: 1.5rem;
+            border: 2px solid var(--border);
+            border-radius: 1.5rem;
+            background: var(--muted);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .mood-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .mood-btn.selected {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .mood-emoji {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Breathing Exercise */
+        .breathing-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--lavender) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 2rem auto;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            transition: transform 4s ease-in-out;
+        }
+
+        .breathing-circle.inhale {
+            transform: scale(1.3);
+        }
+
+        .breathing-circle.exhale {
+            transform: scale(1);
+        }
+
+        /* Memory Game */
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            max-width: 500px;
+            margin: 2rem auto;
+        }
+
+        .memory-card {
+            aspect-ratio: 1;
+            border-radius: 1rem;
+            border: 2px solid var(--border);
+            background: var(--muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .memory-card:hover {
+            transform: scale(1.05);
+        }
+
+        .memory-card.flipped {
+            background: var(--primary-light);
+            border-color: var(--primary);
+        }
+
+        .memory-card.matched {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        /* Floating Bubbles */
+        .bubbles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .bubble {
+            position: absolute;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 50%;
+            animation: float-bubble 15s infinite;
+        }
+
+        @keyframes float-bubble {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+            }
+            25% {
+                transform: translateY(-20vh) translateX(10vw);
+            }
+            50% {
+                transform: translateY(-40vh) translateX(-10vw);
+            }
+            75% {
+                transform: translateY(-60vh) translateX(5vw);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .features, .activities {
+                grid-template-columns: 1fr;
+            }
+
+            .mood-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .nav-buttons {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+
+        /* Hidden class */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            height: 0.75rem;
+            background: var(--muted);
+            border-radius: 1rem;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--lavender) 100%);
+            transition: width 0.3s;
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.3s;
+            z-index: 1000;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast.success {
+            border-left: 4px solid var(--mint);
+        }
+
+        .toast.error {
+            border-left: 4px solid #ef4444;
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Bubbles -->
+    <div class="bubbles" id="bubbles"></div>
+
+    <!-- Navigation -->
+    <nav id="mainNav">
+        <div class="logo">
+            <span>🌈</span>
+            <span>MonEspace</span>
+        </div>
+        <div class="nav-buttons">
+            <a href="#" class="btn btn-outline" onclick="showPage('about')">À propos</a>
+            <a href="#" class="btn btn-primary" onclick="showPage('auth')">Commencer</a>
+        </div>
+    </nav>
+
+    <!-- Home Page -->
+    <div id="homePage" class="page">
+        <div class="hero">
+            <div class="hero-emoji">🌈</div>
+            <h1>
+                Un monde<br>
+                <span class="highlight">adapté à chacun</span>
+            </h1>
+            <p>
+                Un espace numérique bienveillant et personnalisé, conçu pour les enfants
+                avec autisme et leurs accompagnants.
+            </p>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <button class="btn btn-primary" onclick="showPage('auth')">
+                    Commencer →
+                </button>
+                <button class="btn btn-outline" onclick="showPage('about')">
+                    En savoir plus
+                </button>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="features">
+                <div class="feature">
+                    <div class="card">
+                        <div class="feature-icon" style="background: var(--peach-light); color: var(--peach);">
+                            ❤
+                        </div>
+                        <h3>Espace Apaisant</h3>
+                        <p>Un environnement visuel et sonore conçu pour le bien-être et la sérénité.</p>
+                    </div>
+                </div>
+                <div class="feature">
+                    <div class="card">
+                        <div class="feature-icon" style="background: var(--mint-light); color: var(--mint);">
+                            👥
+                        </div>
+                        <h3>Personnalisé</h3>
+                        <p>Chaque espace est adapté aux préférences uniques de chaque enfant.</p>
+                    </div>
+                </div>
+                <div class="feature">
+                    <div class="card">
+                        <div class="feature-icon" style="background: var(--lavender-light); color: var(--lavender);">
+                            🛡
+                        </div>
+                        <h3>Sécurisé</h3>
+                        <p>Un espace protégé où les enfants peuvent explorer en toute confiance.</p>
+                    </div>
+                </div>
+                <div class="feature">
+                    <div class="card">
+                        <div class="feature-icon" style="background: var(--calm-blue-light); color: var(--calm-blue);">
+                            ✨
+                        </div>
+                        <h3>Accessible</h3>
+                        <p>Options d'adaptation sensorielle pour répondre à tous les besoins.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Page -->
+    <div id="authPage" class="page hidden">
+        <div class="container" style="max-width: 500px; padding-top: 8rem;">
+            <div class="card">
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <div style="width: 4rem; height: 4rem; border-radius: 1.5rem; background: linear-gradient(135deg, var(--primary) 0%, var(--lavender) 100%); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                        <span style="font-size: 2rem;">🌈</span>
+                    </div>
+                    <h1>Connexion</h1>
+                    <p style="color: var(--muted-foreground);">Bienvenue ! Connectez-vous à votre compte.</p>
+                </div>
+
+                <div class="form-group">
+                    <label>Je suis :</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <button class="btn btn-outline" onclick="selectRole('accompagnant')" id="roleAccompagnant">
+                            <span style="font-size: 2rem; display: block;">👨‍👩‍👧</span>
+                            Accompagnant
+                        </button>
+                        <button class="btn btn-outline" onclick="selectRole('enfant')" id="roleEnfant">
+                            <span style="font-size: 2rem; display: block;">🧒</span>
+                            Enfant
+                        </button>
+                    </div>
+                </div>
+
+                <form onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" class="form-input" placeholder="votre@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Mot de passe</label>
+                        <input type="password" class="form-input" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        Se connecter
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Child Space -->
+    <div id="childSpace" class="page hidden">
+        <div class="container" style="padding-top: 8rem;">
+            <div style="text-align: center; margin-bottom: 3rem;">
+                <div class="hero-emoji">🌅</div>
+                <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">Bonjour, <span id="childName">ami</span> !</h1>
+                <p style="color: var(--muted-foreground); font-size: 1.25rem;">Que veux-tu faire aujourd'hui ?</p>
+            </div>
+
+            <div class="activities">
+                <div class="activity-card" style="background: var(--lavender-light); border-color: var(--lavender);" onclick="showPage('relax')">
+                    <span class="activity-emoji">🌊</span>
+                    <h3>Se Calmer</h3>
+                    <p style="color: var(--muted-foreground); font-size: 0.9rem;">Respirer et se détendre</p>
+                </div>
+                <div class="activity-card" style="background: var(--peach-light); border-color: var(--peach);" onclick="showPage('draw')">
+                    <span class="activity-emoji">🎨</span>
+                    <h3>Dessiner</h3>
+                    <p style="color: var(--muted-foreground); font-size: 0.9rem;">Créer de beaux dessins</p>
+                </div>
+                <div class="activity-card" style="background: var(--mint-light); border-color: var(--mint);" onclick="showPage('games')">
+                    <span class="activity-emoji">🎮</span>
+                    <h3>Jouer</h3>
+                    <p style="color: var(--muted-foreground); font-size: 0.9rem;">Puzzles et jeux</p>
+                </div>
+                <div class="activity-card" style="background: #fce7f3; border-color: #f472b6;" onclick="showPage('journal')">
+                    <span class="activity-emoji">📔</span>
+                    <h3>Journal</h3>
+                    <p style="color: var(--muted-foreground); font-size: 0.9rem;">Comment je me sens</p>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 2rem;">
+                <button class="btn btn-outline" onclick="showPage('home')">
+                    ← Retour à l'accueil
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Relax Page -->
+    <div id="relaxPage" class="page hidden">
+        <div class="container" style="padding-top: 8rem;">
+            <div style="text-align: center; margin-bottom: 3rem;">
+                <span style="font-size: 4rem;">🧘</span>
+                <h1 style="font-size: 2.5rem; margin: 1rem 0;">Espace Calme</h1>
+                <p style="color: var(--muted-foreground);">Prends un moment pour te détendre</p>
+            </div>
+
+            <div class="card" style="text-align: center; max-width: 600px; margin: 0 auto;">
+                <h2 style="margin-bottom: 2rem;">Exercice de Respiration</h2>
+                <div class="breathing-circle" id="breathingCircle">
+                    <span id="breathingText">Prêt ?</span>
+                </div>
+                <button class="btn btn-primary" onclick="startBreathing()" id="breathingBtn">
+                    Commencer
+                </button>
+            </div>
+
+            <div style="text-align: center; margin-top: 2rem;">
+                <button class="btn btn-outline" onclick="showPage('childSpace')">
+                    ← Retour
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Draw Page -->
+    <div id="drawPage" class="page hidden">
+        <div class="container" style="padding-top: 8rem;">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <span style="font-size: 4rem;">🎨</span>
+                <h1 style="font-size: 2.5rem; margin: 1rem 0;">Atelier Dessin</h1>
+                <p style="color: var(--muted-foreground);">Exprime ta créativité !</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 200px 1fr; gap: 2rem;">
+                <!-- Tools Panel -->
+                <div class="card">
+                    <h3 style="margin-bottom: 1rem;">Couleurs</h3>
+                    <div class="color-palette">
+                        <button class="color-btn active" style="background: #3B82F6;" onclick="selectColor('#3B82F6', this)"></button>
+                        <button class="color-btn" style="background: #10B981;" onclick="selectColor('#10B981', this)"></button>
+                        <button class="color-btn" style="background: #F472B6;" onclick="selectColor('#F472B6', this)"></button>
+                        <button class="color-btn" style="background: #FBBF24;" onclick="selectColor('#FBBF24', this)"></button>
+                        <button class="color-btn" style="background: #8B5CF6;" onclick="selectColor('#8B5CF6', this)"></button>
+                        <button class="color-btn" style="background: #F97316;" onclick="selectColor('#F97316', this)"></button>
+                        <button class="color-btn" style="background: #EF4444;" onclick="selectColor('#EF4444', this)"></button>
+                        <button class="color-btn" style="background: #000000;" onclick="selectColor('#000000', this)"></button>
+                    </div>
+
+                    <h3 style="margin: 1.5rem 0 1rem;">Taille</h3>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <button class="btn btn-outline" onclick="setBrushSize(5)">Petit</button>
+                        <button class="btn btn-outline" onclick="setBrushSize(15)">Moyen</button>
+                        <button class="btn btn-outline" onclick="setBrushSize(30)">Grand</button>
+                    </div>
+
+                    <h3 style="margin: 1.5rem 0 1rem;">Actions</h3>
+                    <button class="btn btn-outline" style="width: 100%; margin-bottom: 0.5rem;" onclick="clearCanvas()">
+                        Effacer tout
+                    </button>
+                    <button class="btn btn-primary" style="width: 100%;" onclick="saveDrawing()">
+                        Sauvegarder
+                    </button>
+                </div>
+
+                <!-- Canvas -->
+                <div class="card">
+                    <canvas id="drawingCanvas" width="800" height="600"></canvas>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 2rem;">
+                <button class="btn btn-outline" onclick="showPage('childSpace')">
+                    ← Retour
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Games Page -->
+    <div id="gamesPage" class="page hidden">
+        <div class="container" style="padding-top: 8rem;">
+            <div style="text-align: center; margin-bottom: 3rem;">
+                <span style="font-size: 4rem;">🎮</span>
+                <h1 style="font-size: 2.5rem; margin: 1rem 0;">Espace Jeux</h1>
+                <p style="color: var(--muted-foreground);">Choisis un jeu et amuse-toi !</p>
+            </div>
+
+            <div id="gameSelection">
+                <div class="activities" style="max-width: 800px; margin: 0 auto;">
+                    <div class="activity-card" onclick="startMemoryGame()">
+                        <span class="activity-emoji">🎴</span>
+                        <h3>Memory</h3>
+                        <p style="color: var(--muted-foreground); font-size: 0.9rem;">Trouve les paires</p>
+                    </div>
+                    <div class="activity-card">
+                        <span class="activity-emoji">🧩</span>
+                        <h3>Puzzle</h3>
+                        <p style="color: var(--muted-foreground); font-size: 0.9rem;">Bientôt disponible</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="memoryGame" class="hidden">
+                <div class="card" style="max-width: 600px; margin: 0 auto;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                        <h2>Memory Game</h2>
+                        <div>
+                            <span>Paires: <strong id="matchedPairs">0</strong>/6</span>
+                            <button class="btn btn-outline" style="margin-left: 1rem;" onclick="startMemoryGame()">
+                                🔄 Recommencer
+                            </button>
+                        </div>
+                    </div>
+                    <div class="memory-grid" id="memoryGrid"></div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 2rem;">
+                <button class="btn btn-outline" onclick="showPage('childSpace')">
+                    ← Retour
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Journal Page -->
+    <div id="journalPage" class="page hidden">
+        <div class="container" style="padding-top: 8rem;">
+            <div style="text-align: center; margin-bottom: 3rem;">
+                <span style="font-size: 4rem;">📔</span>
+                <h1 style="font-size: 2.5rem; margin: 1rem 0;">Mon Journal</h1>
+                <p style="color: var(--muted-foreground);">Comment te sens-tu aujourd'hui ?</p>
+            </div>
+
+            <div class="card" style="max-width: 600px; margin: 0 auto;">
+                <h2 style="margin-bottom: 2rem;">Mon humeur</h2>
+                <div class="mood-grid">
+                    <button class="mood-btn" onclick="selectMood('😊', this)">
+                        <span class="mood-emoji">😊</span>
+                        <span>Content</span>
+                    </button>
+                    <button class="mood-btn" onclick="selectMood('😐', this)">
+                        <span class="mood-emoji">😐</span>
+                        <span>Normal</span>
+                    </button>
+                    <button class="mood-btn" onclick="selectMood('😢', this)">
+                        <span class="mood-emoji">😢</span>
+                        <span>Triste</span>
+                    </button>
+                    <button class="mood-btn" onclick="selectMood('😠', this)">
+                        <span class="mood-emoji">😠</span>
+                        <span>Énervé</span>
+                    </button>
+                    <button class="mood-btn" onclick="selectMood('😴', this)">
+                        <span class="mood-emoji">😴</span>
+                        <span>Fatigué</span>
+                    </button>
+                    <button class="mood-btn" onclick="selectMood('🤗', this)">
+                        <span class="mood-emoji">🤗</span>
+                        <span>Câlin</span>
+                    </button>
+                    <button class="mood-btn" onclick="selectMoo
