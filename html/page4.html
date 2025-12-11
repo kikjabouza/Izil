@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Espace Calme - Relaxation</title>
+    <title>Espace Calme - Relaxation pour personnes autistes</title>
     <style>
         * {
             margin: 0;
@@ -38,6 +38,8 @@
             --border-radius: 1rem;
             --border-radius-lg: 1.5rem;
             --border-radius-xl: 2rem;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
         }
 
         body {
@@ -47,6 +49,7 @@
             min-height: 100vh;
             padding: 2rem 1rem;
             line-height: 1.6;
+            transition: all 0.3s ease;
         }
 
         .container {
@@ -57,7 +60,7 @@
         /* Header */
         .header {
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 2rem;
             animation: fadeIn 0.8s ease-out;
         }
 
@@ -80,12 +83,97 @@
             color: var(--muted-foreground);
         }
 
+        /* Mode Urgence */
+        .emergency-btn {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .emergency-btn:hover {
+            background-color: var(--danger-hover);
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+        }
+
+        /* Mode Urgence - Écran */
+        .emergency-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+            z-index: 9999;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .emergency-overlay.active {
+            display: flex;
+        }
+
+        .emergency-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+            animation: pulse-emergency 3s ease-in-out infinite;
+        }
+
+        .emergency-circle-inner {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .emergency-message {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .emergency-submessage {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin-bottom: 2rem;
+        }
+
         /* Sélecteur de thème */
         .theme-selector {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 1rem;
-            margin-bottom: 3rem;
+            margin-bottom: 2rem;
         }
 
         @media (min-width: 768px) {
@@ -206,13 +294,15 @@
             background: linear-gradient(135deg, #9d8df1, #4a6fa5);
         }
 
+        /* Boutons */
         .button-group {
             display: flex;
+            flex-wrap: wrap;
             justify-content: center;
             gap: 1rem;
+            margin-top: 1.5rem;
         }
 
-        /* Boutons */
         .btn {
             padding: 0.875rem 1.75rem;
             border-radius: var(--border-radius-lg);
@@ -248,6 +338,220 @@
             border-color: var(--primary);
             background-color: rgba(74, 111, 165, 0.05);
             transform: scale(1.05);
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        /* Contrôles audio */
+        .audio-controls {
+            margin-top: 2rem;
+        }
+
+        .sound-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .sound-btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            background-color: rgba(74, 111, 165, 0.1);
+            border: 2px solid rgba(74, 111, 165, 0.3);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .sound-btn:hover {
+            background-color: rgba(74, 111, 165, 0.2);
+            transform: scale(1.05);
+        }
+
+        .sound-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Messages rassurants */
+        .reassuring-messages {
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .message-box {
+            background-color: rgba(74, 111, 165, 0.1);
+            border-radius: var(--border-radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+            font-weight: 500;
+            animation: fadeIn 1s ease-out;
+        }
+
+        /* Personnalisation sensorielle */
+        .preferences {
+            margin-top: 2rem;
+        }
+
+        .preference-option {
+            margin-bottom: 1.5rem;
+        }
+
+        .preference-option label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .slider {
+            flex-grow: 1;
+            height: 8px;
+            border-radius: 4px;
+            background-color: var(--border);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            cursor: pointer;
+        }
+
+        /* Timer de calme */
+        .timer-container {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .timer-circle {
+            position: relative;
+            width: 12rem;
+            height: 12rem;
+            margin: 0 auto 1.5rem;
+        }
+
+        .timer-svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .timer-circle-bg {
+            fill: none;
+            stroke: rgba(74, 111, 165, 0.1);
+            stroke-width: 8;
+        }
+
+        .timer-circle-fill {
+            fill: none;
+            stroke: var(--primary);
+            stroke-width: 8;
+            stroke-linecap: round;
+            stroke-dasharray: 628;
+            stroke-dashoffset: 628;
+            transition: stroke-dashoffset 1s linear;
+        }
+
+        .timer-display {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        /* Routine */
+        .routine {
+            margin-top: 2rem;
+        }
+
+        .routine-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background-color: rgba(74, 111, 165, 0.05);
+            border-radius: var(--border-radius);
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .routine-item:hover {
+            background-color: rgba(74, 111, 165, 0.1);
+        }
+
+        .routine-checkbox {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .routine-checkbox.checked {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        /* Mini-jeu sensoriel */
+        .sensory-game {
+            margin-top: 2rem;
+            min-height: 200px;
+            border-radius: var(--border-radius-lg);
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-instruction {
+            text-align: center;
+            padding: 1.5rem;
+            font-weight: 500;
+        }
+
+        .bubble {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(74, 111, 165, 0.2);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .bubble:hover {
+            transform: scale(1.2);
+            background-color: rgba(74, 111, 165, 0.4);
         }
 
         /* Animations apaisantes */
@@ -406,6 +710,26 @@
             }
         }
 
+        @keyframes pulse-emergency {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 0.9;
+            }
+        }
+
+        @keyframes bubble-float {
+            0% {
+                transform: translateY(0);
+            }
+            100% {
+                transform: translateY(-100vh);
+            }
+        }
+
         .wave-1 {
             animation: waveMove1 3s ease-in-out infinite;
         }
@@ -427,9 +751,16 @@
     <div class="container">
         <!-- En-tête -->
         <div class="header">
-            <span class="header-emoji">🧘</span>
-            <h1>Espace Calme</h1>
-            <p>Prends un moment pour te détendre</p>
+            <span class="header-emoji">🧠</span>
+            <h1>Espace Calme Autiste</h1>
+            <p>Un environnement apaisant et personnalisé pour se recentrer</p>
+        </div>
+
+        <!-- Messages rassurants -->
+        <div class="reassuring-messages">
+            <div class="message-box" id="reassuring-message">
+                Tu es en sécurité ici. Prends ton temps.
+            </div>
         </div>
 
         <!-- Sélecteur de thème -->
@@ -437,9 +768,40 @@
             <!-- Les boutons de thème seront générés par JavaScript -->
         </div>
 
+        <!-- Personnalisation sensorielle -->
+        <div class="card">
+            <h2>Préférences sensorielles</h2>
+            <div class="preferences">
+                <div class="preference-option">
+                    <label for="color-intensity">Intensité des couleurs</label>
+                    <div class="slider-container">
+                        <input type="range" id="color-intensity" class="slider" min="1" max="10" value="5">
+                        <span id="color-value">5/10</span>
+                    </div>
+                </div>
+                <div class="preference-option">
+                    <label for="animation-speed">Vitesse des animations</label>
+                    <div class="slider-container">
+                        <input type="range" id="animation-speed" class="slider" min="1" max="10" value="5">
+                        <span id="speed-value">5/10</span>
+                    </div>
+                </div>
+                <div class="preference-option">
+                    <label for="brightness">Luminosité</label>
+                    <div class="slider-container">
+                        <input type="range" id="brightness" class="slider" min="1" max="10" value="5">
+                        <span id="brightness-value">5/10</span>
+                    </div>
+                </div>
+                <button class="btn btn-outline btn-small" id="low-stimulation-btn">
+                    🔅 Mode faible stimulation
+                </button>
+            </div>
+        </div>
+
         <!-- Exercice de respiration -->
         <div class="card">
-            <h2>Exercice de Respiration</h2>
+            <h2>Exercice de Respiration Guidée</h2>
             
             <div class="breathing-container">
                 <div class="breathing-bg"></div>
@@ -462,6 +824,82 @@
                     </svg>
                     Pause
                 </button>
+                <button class="btn btn-outline" id="voice-guidance-btn">
+                    🗣️ Guidance vocale
+                </button>
+            </div>
+        </div>
+
+        <!-- Timer de calme -->
+        <div class="card">
+            <h2>Timer de Calme</h2>
+            <div class="timer-container">
+                <div class="timer-circle">
+                    <svg class="timer-svg">
+                        <circle class="timer-circle-bg" cx="50%" cy="50%" r="45%"></circle>
+                        <circle class="timer-circle-fill" cx="50%" cy="50%" r="45%"></circle>
+                    </svg>
+                    <div class="timer-display" id="timer-display">00:00</div>
+                </div>
+                <div class="button-group">
+                    <button class="btn btn-outline timer-btn" data-time="60">1 min</button>
+                    <button class="btn btn-outline timer-btn" data-time="180">3 min</button>
+                    <button class="btn btn-outline timer-btn" data-time="300">5 min</button>
+                    <button class="btn btn-outline" id="stop-timer">Arrêter</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contrôles audio -->
+        <div class="card">
+            <h2>Sons Apaisants</h2>
+            <div class="audio-controls">
+                <div class="button-group">
+                    <button class="btn btn-outline" id="audio-toggle">
+                        🔊 Activer les sons
+                    </button>
+                </div>
+                
+                <div class="sound-buttons" id="sound-buttons">
+                    <!-- Les boutons de sons seront générés par JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Routine -->
+        <div class="card">
+            <h2>Ma Routine Calme</h2>
+            <div class="routine">
+                <div class="routine-item" data-action="breathing">
+                    <div class="routine-checkbox"></div>
+                    <div class="routine-text">Exercice de respiration (4 cycles)</div>
+                </div>
+                <div class="routine-item" data-action="timer">
+                    <div class="routine-checkbox"></div>
+                    <div class="routine-text">Timer de calme (3 minutes)</div>
+                </div>
+                <div class="routine-item" data-action="sounds">
+                    <div class="routine-checkbox"></div>
+                    <div class="routine-text">Sons apaisants (pluie)</div>
+                </div>
+                <div class="routine-item" data-action="message">
+                    <div class="routine-checkbox"></div>
+                    <div class="routine-text">Message rassurant</div>
+                </div>
+            </div>
+            <div class="button-group" style="margin-top: 1.5rem;">
+                <button class="btn btn-primary" id="start-routine">
+                    ▶ Démarrer la routine
+                </button>
+            </div>
+        </div>
+
+        <!-- Mini-jeu sensoriel -->
+        <div class="card">
+            <h2>Mini-Jeu Sensoriel</h2>
+            <div class="sensory-game" id="sensory-game">
+                <div class="game-instruction">Clique sur les bulles qui apparaissent pour les faire disparaître</div>
+                <!-- Les bulles seront générées par JavaScript -->
             </div>
         </div>
 
@@ -493,6 +931,22 @@
         </div>
     </div>
 
+    <!-- Mode Urgence -->
+    <button class="emergency-btn" id="emergency-btn">⚠️</button>
+    
+    <div class="emergency-overlay" id="emergency-overlay">
+        <div class="emergency-circle">
+            <div class="emergency-circle-inner">
+                Respire avec moi
+            </div>
+        </div>
+        <div class="emergency-message">Respire avec moi</div>
+        <div class="emergency-submessage">
+            Tu es en sécurité. Inspire lentement par le nez, retiens ta respiration un instant, puis expire doucement par la bouche.
+        </div>
+        <button class="btn btn-primary" id="exit-emergency">Je me sens mieux</button>
+    </div>
+
     <script>
         // Données des thèmes
         const themes = [
@@ -502,17 +956,65 @@
             { id: 'breath', label: 'Respiration', color: 'lavender', emoji: '💨' },
         ];
 
+        // Données des sons
+        const sounds = [
+            { id: 'rain', label: 'Pluie douce', emoji: '🌧️' },
+            { id: 'ocean', label: 'Vagues de mer', emoji: '🌊' },
+            { id: 'wind', label: 'Vent léger', emoji: '🌬️' },
+            { id: 'bell', label: 'Cloche tibétaine', emoji: '🔔' },
+            { id: 'piano', label: 'Piano doux', emoji: '🎹' },
+            { id: 'birds', label: 'Chants d\'oiseaux', emoji: '🐦' }
+        ];
+
+        // Messages rassurants
+        const reassuringMessages = [
+            "Tu es en sécurité.",
+            "Tu fais du bon travail.",
+            "Respire doucement, je suis là avec toi.",
+            "Tu peux prendre ton temps.",
+            "Chaque respiration t'aide à te recentrer.",
+            "Tu es fort et capable.",
+            "Cet instant difficile va passer.",
+            "Écoute ton corps, il sait ce dont tu as besoin.",
+            "Tu n'es pas seul.",
+            "Tes sentiments sont valides et importants."
+        ];
+
         // État de l'application
         let currentTheme = 'ocean';
         let isBreathing = false;
         let breathPhase = 'inhale';
         let breathingInterval = null;
+        let isAudioActive = false;
+        let currentSound = null;
+        let currentAudio = null;
+        let isVoiceGuidance = false;
+        let isEmergencyMode = false;
+        let timerInterval = null;
+        let timerSeconds = 0;
+        let timerTotalSeconds = 0;
+        let routineItems = [];
+        let isLowStimulation = false;
+
+        // Sons (liens vers des fichiers audio libres de droits)
+        const soundFiles = {
+            'rain': 'https://assets.mixkit.co/sfx/preview/mixkit-rain-loop-1249.mp3',
+            'ocean': 'https://assets.mixkit.co/sfx/preview/mixkit-ocean-waves-loop-1243.mp3',
+            'wind': 'https://assets.mixkit.co/sfx/preview/mixkit-wind-in-the-trees-1251.mp3',
+            'bell': 'https://assets.mixkit.co/sfx/preview/mixkit-bell-meditation-597.mp3',
+            'piano': 'https://assets.mixkit.co/sfx/preview/mixkit-piano-ambient-1125.mp3',
+            'birds': 'https://assets.mixkit.co/sfx/preview/mixkit-birds-chirping-1240.mp3'
+        };
 
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
             initThemeSelector();
             initFireflies();
+            initSoundButtons();
             setupEventListeners();
+            updateReassuringMessage();
+            initSensoryGame();
+            initRoutine();
         });
 
         // Initialiser le sélecteur de thème
@@ -536,6 +1038,9 @@
                     // Ajouter la classe active au bouton cliqué
                     button.classList.add('active', theme.color);
                     currentTheme = theme.id;
+                    
+                    // Changer le message rassurant
+                    updateReassuringMessage();
                 });
                 
                 container.appendChild(button);
@@ -585,13 +1090,222 @@
             document.head.appendChild(style);
         }
 
+        // Initialiser les boutons de sons
+        function initSoundButtons() {
+            const container = document.getElementById('sound-buttons');
+            
+            sounds.forEach(sound => {
+                const button = document.createElement('button');
+                button.className = 'sound-btn';
+                button.id = `sound-${sound.id}`;
+                button.innerHTML = `
+                    <span>${sound.emoji}</span>
+                    <span>${sound.label}</span>
+                `;
+                
+                button.addEventListener('click', () => {
+                    if (currentSound === sound.id) {
+                        stopSound();
+                    } else {
+                        playSound(sound.id);
+                    }
+                });
+                
+                container.appendChild(button);
+            });
+        }
+
+        // Initialiser le mini-jeu sensoriel
+        function initSensoryGame() {
+            const gameContainer = document.getElementById('sensory-game');
+            
+            // Créer des bulles toutes les 2 secondes
+            setInterval(() => {
+                if (isEmergencyMode) return;
+                
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                bubble.textContent = '🫧';
+                
+                // Position aléatoire
+                const left = Math.random() * 80 + 10;
+                bubble.style.left = `${left}%`;
+                bubble.style.top = `100%`;
+                
+                // Taille aléatoire
+                const size = Math.random() * 20 + 30;
+                bubble.style.width = `${size}px`;
+                bubble.style.height = `${size}px`;
+                
+                // Animation de flottement
+                const duration = Math.random() * 5 + 10;
+                bubble.style.animation = `bubble-float ${duration}s linear forwards`;
+                
+                // Événement de clic
+                bubble.addEventListener('click', () => {
+                    bubble.style.transform = 'scale(1.5)';
+                    bubble.style.opacity = '0';
+                    setTimeout(() => {
+                        if (bubble.parentNode) {
+                            bubble.parentNode.removeChild(bubble);
+                        }
+                    }, 300);
+                });
+                
+                gameContainer.appendChild(bubble);
+                
+                // Supprimer la bulle après l'animation
+                setTimeout(() => {
+                    if (bubble.parentNode) {
+                        bubble.parentNode.removeChild(bubble);
+                    }
+                }, duration * 1000);
+                
+            }, 2000);
+        }
+
+        // Initialiser la routine
+        function initRoutine() {
+            routineItems = document.querySelectorAll('.routine-item');
+            
+            routineItems.forEach(item => {
+                const checkbox = item.querySelector('.routine-checkbox');
+                const action = item.getAttribute('data-action');
+                
+                checkbox.addEventListener('click', () => {
+                    checkbox.classList.toggle('checked');
+                    checkbox.textContent = checkbox.classList.contains('checked') ? '✓' : '';
+                });
+            });
+        }
+
         // Configurer les écouteurs d'événements
         function setupEventListeners() {
-            // Bouton de démarrage
+            // Bouton de démarrage respiration
             document.getElementById('start-btn').addEventListener('click', startBreathingExercise);
             
-            // Bouton de pause
+            // Bouton de pause respiration
             document.getElementById('pause-btn').addEventListener('click', stopBreathingExercise);
+            
+            // Bouton guidance vocale
+            document.getElementById('voice-guidance-btn').addEventListener('click', toggleVoiceGuidance);
+            
+            // Bouton d'activation audio
+            document.getElementById('audio-toggle').addEventListener('click', toggleAudio);
+            
+            // Boutons timer
+            document.querySelectorAll('.timer-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const time = parseInt(btn.getAttribute('data-time'));
+                    startTimer(time);
+                });
+            });
+            
+            // Bouton arrêt timer
+            document.getElementById('stop-timer').addEventListener('click', stopTimer);
+            
+            // Mode urgence
+            document.getElementById('emergency-btn').addEventListener('click', activateEmergencyMode);
+            document.getElementById('exit-emergency').addEventListener('click', deactivateEmergencyMode);
+            
+            // Routine
+            document.getElementById('start-routine').addEventListener('click', startRoutine);
+            
+            // Personnalisation sensorielle
+            document.getElementById('color-intensity').addEventListener('input', updateColorIntensity);
+            document.getElementById('animation-speed').addEventListener('input', updateAnimationSpeed);
+            document.getElementById('brightness').addEventListener('input', updateBrightness);
+            document.getElementById('low-stimulation-btn').addEventListener('click', toggleLowStimulation);
+            
+            // Mettre à jour les valeurs des sliders
+            updateSliderValues();
+        }
+
+        // Jouer un son
+        function playSound(soundId) {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
+            }
+            
+            // Retirer la classe active de tous les boutons de son
+            document.querySelectorAll('.sound-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Ajouter la classe active au bouton cliqué
+            document.getElementById(`sound-${soundId}`).classList.add('active');
+            
+            // Créer et jouer l'audio
+            currentAudio = new Audio(soundFiles[soundId]);
+            currentAudio.loop = true;
+            currentAudio.volume = 0.5;
+            currentAudio.play();
+            currentSound = soundId;
+        }
+
+        // Arrêter le son
+        function stopSound() {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
+            }
+            
+            // Retirer la classe active de tous les boutons de son
+            document.querySelectorAll('.sound-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            currentSound = null;
+        }
+
+        // Activer/désactiver l'audio
+        function toggleAudio() {
+            isAudioActive = !isAudioActive;
+            const button = document.getElementById('audio-toggle');
+            
+            if (isAudioActive) {
+                button.innerHTML = '🔇 Désactiver les sons';
+                // Jouer un son par défaut
+                playSound('rain');
+            } else {
+                button.innerHTML = '🔊 Activer les sons';
+                stopSound();
+            }
+        }
+
+        // Activer/désactiver la guidance vocale
+        function toggleVoiceGuidance() {
+            isVoiceGuidance = !isVoiceGuidance;
+            const button = document.getElementById('voice-guidance-btn');
+            
+            if (isVoiceGuidance) {
+                button.innerHTML = '🔇 Désactiver guidance';
+                speakMessage("Je vais te guider dans ta respiration. Inspire... Retiens... Expire...");
+            } else {
+                button.innerHTML = '🗣️ Guidance vocale';
+            }
+        }
+
+        // Parler un message (utilisation de Web Speech API)
+        function speakMessage(message) {
+            if (!isVoiceGuidance) return;
+            
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(message);
+                utterance.lang = 'fr-FR';
+                utterance.rate = 0.8;
+                utterance.pitch = 1;
+                utterance.volume = 0.8;
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Mettre à jour le message rassurant
+        function updateReassuringMessage() {
+            const messageElement = document.getElementById('reassuring-message');
+            const randomIndex = Math.floor(Math.random() * reassuringMessages.length);
+            messageElement.textContent = reassuringMessages[randomIndex];
         }
 
         // Démarrer l'exercice de respiration
@@ -639,6 +1353,8 @@
             circle.classList.add('inhale');
             circle.textContent = 'Inspire... 🌬️';
             
+            if (isVoiceGuidance) speakMessage("Inspire lentement");
+            
             setTimeout(() => {
                 if (!isBreathing) return;
                 
@@ -647,6 +1363,8 @@
                 circle.classList.remove('inhale', 'exhale');
                 circle.classList.add('hold');
                 circle.textContent = 'Retiens... ⏸️';
+                
+                if (isVoiceGuidance) speakMessage("Retiens ta respiration");
                 
                 setTimeout(() => {
                     if (!isBreathing) return;
@@ -657,6 +1375,8 @@
                     circle.classList.add('exhale');
                     circle.textContent = 'Expire... 💨';
                     
+                    if (isVoiceGuidance) speakMessage("Expire doucement");
+                    
                     setTimeout(() => {
                         if (isBreathing) {
                             runBreathingCycle(); // Recommencer le cycle
@@ -666,18 +1386,221 @@
             }, 4000);
         }
 
-        // Fonction pour obtenir le texte de la phase de respiration
-        function getBreathText() {
-            switch (breathPhase) {
-                case 'inhale':
-                    return 'Inspire... 🌬️';
-                case 'hold':
-                    return 'Retiens... ⏸️';
-                case 'exhale':
-                    return 'Expire... 💨';
-                default:
-                    return 'Prêt ?';
+        // Démarrer le timer
+        function startTimer(seconds) {
+            stopTimer(); // Arrêter tout timer existant
+            
+            timerTotalSeconds = seconds;
+            timerSeconds = seconds;
+            
+            // Mettre à jour l'affichage
+            updateTimerDisplay();
+            
+            // Mettre à jour la barre de progression
+            updateTimerProgress();
+            
+            // Démarrer l'intervalle
+            timerInterval = setInterval(() => {
+                timerSeconds--;
+                
+                if (timerSeconds <= 0) {
+                    stopTimer();
+                    alert("Le timer est terminé ! 🎉");
+                    updateReassuringMessage();
+                    return;
+                }
+                
+                updateTimerDisplay();
+                updateTimerProgress();
+            }, 1000);
+        }
+
+        // Arrêter le timer
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
             }
+            
+            timerSeconds = 0;
+            timerTotalSeconds = 0;
+            updateTimerDisplay();
+            updateTimerProgress();
+        }
+
+        // Mettre à jour l'affichage du timer
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timerSeconds / 60);
+            const seconds = timerSeconds % 60;
+            const display = document.getElementById('timer-display');
+            display.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Mettre à jour la barre de progression du timer
+        function updateTimerProgress() {
+            const fill = document.querySelector('.timer-circle-fill');
+            if (timerTotalSeconds === 0) {
+                fill.style.strokeDashoffset = 628;
+            } else {
+                const progress = 628 - (timerSeconds / timerTotalSeconds) * 628;
+                fill.style.strokeDashoffset = progress;
+            }
+        }
+
+        // Activer le mode urgence
+        function activateEmergencyMode() {
+            isEmergencyMode = true;
+            document.getElementById('emergency-overlay').classList.add('active');
+            
+            // Arrêter tous les sons et animations en cours
+            stopSound();
+            stopBreathingExercise();
+            stopTimer();
+            
+            // Jouer un son apaisant
+            const emergencyAudio = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-meditation-bell-597.mp3');
+            emergencyAudio.volume = 0.3;
+            emergencyAudio.play();
+            
+            // Parler un message rassurant
+            setTimeout(() => {
+                speakMessage("Tu es en sécurité. Respire avec moi. Inspire lentement, retiens, expire doucement.");
+            }, 1000);
+        }
+
+        // Désactiver le mode urgence
+        function deactivateEmergencyMode() {
+            isEmergencyMode = false;
+            document.getElementById('emergency-overlay').classList.remove('active');
+            updateReassuringMessage();
+        }
+
+        // Démarrer la routine
+        function startRoutine() {
+            const checkedItems = [];
+            
+            routineItems.forEach(item => {
+                const checkbox = item.querySelector('.routine-checkbox');
+                if (checkbox.classList.contains('checked')) {
+                    const action = item.getAttribute('data-action');
+                    checkedItems.push(action);
+                }
+            });
+            
+            if (checkedItems.length === 0) {
+                alert("Sélectionne au moins une activité dans ta routine !");
+                return;
+            }
+            
+            // Exécuter les activités dans l'ordre
+            executeRoutineStep(checkedItems, 0);
+        }
+
+        // Exécuter une étape de la routine
+        function executeRoutineStep(items, index) {
+            if (index >= items.length) {
+                alert("Routine terminée ! 🎉");
+                updateReassuringMessage();
+                return;
+            }
+            
+            const action = items[index];
+            
+            switch (action) {
+                case 'breathing':
+                    alert("Début de l'exercice de respiration");
+                    startBreathingExercise();
+                    setTimeout(() => {
+                        stopBreathingExercise();
+                        setTimeout(() => executeRoutineStep(items, index + 1), 1000);
+                    }, 16000); // 4 cycles de respiration
+                    break;
+                    
+                case 'timer':
+                    alert("Démarrage du timer de 3 minutes");
+                    startTimer(180);
+                    setTimeout(() => {
+                        stopTimer();
+                        setTimeout(() => executeRoutineStep(items, index + 1), 1000);
+                    }, 181000); // 3 minutes + 1 seconde
+                    break;
+                    
+                case 'sounds':
+                    alert("Activation des sons apaisants");
+                    playSound('rain');
+                    setTimeout(() => {
+                        stopSound();
+                        setTimeout(() => executeRoutineStep(items, index + 1), 1000);
+                    }, 30000); // 30 secondes de sons
+                    break;
+                    
+                case 'message':
+                    updateReassuringMessage();
+                    setTimeout(() => executeRoutineStep(items, index + 1), 3000);
+                    break;
+            }
+        }
+
+        // Mettre à jour l'intensité des couleurs
+        function updateColorIntensity() {
+            const value = document.getElementById('color-intensity').value;
+            document.getElementById('color-value').textContent = `${value}/10`;
+            
+            // Ajuster la saturation globale
+            document.body.style.filter = `saturate(${value * 10}%)`;
+        }
+
+        // Mettre à jour la vitesse des animations
+        function updateAnimationSpeed() {
+            const value = document.getElementById('animation-speed').value;
+            document.getElementById('speed-value').textContent = `${value}/10`;
+            
+            // Ajuster la vitesse d'animation globale
+            const speedFactor = value / 5; // 0.2 à 2
+            document.body.style.setProperty('--animation-speed-factor', speedFactor);
+            
+            // Appliquer aux éléments animés
+            document.querySelectorAll('.breathing-circle, .wave, .cloud1, .cloud2, .firefly').forEach(el => {
+                const currentAnimation = getComputedStyle(el).animation;
+                if (currentAnimation && currentAnimation !== 'none 0s ease 0s 1 normal none running') {
+                    const newAnimation = currentAnimation.replace(/(\d+(\.\d+)?)s/g, (match, p1) => {
+                        return (p1 / speedFactor) + 's';
+                    });
+                    el.style.animation = newAnimation;
+                }
+            });
+        }
+
+        // Mettre à jour la luminosité
+        function updateBrightness() {
+            const value = document.getElementById('brightness').value;
+            document.getElementById('brightness-value').textContent = `${value}/10`;
+            
+            // Ajuster la luminosité globale
+            document.body.style.filter = `brightness(${value * 10}%)`;
+        }
+
+        // Activer/désactiver le mode faible stimulation
+        function toggleLowStimulation() {
+            isLowStimulation = !isLowStimulation;
+            const button = document.getElementById('low-stimulation-btn');
+            
+            if (isLowStimulation) {
+                button.innerHTML = '🔆 Mode normal';
+                document.body.style.filter = 'grayscale(50%) brightness(80%)';
+                document.body.style.backgroundColor = '#f0f0f0';
+            } else {
+                button.innerHTML = '🔅 Mode faible stimulation';
+                document.body.style.filter = '';
+                document.body.style.backgroundColor = '';
+            }
+        }
+
+        // Mettre à jour les valeurs des sliders
+        function updateSliderValues() {
+            document.getElementById('color-intensity').dispatchEvent(new Event('input'));
+            document.getElementById('animation-speed').dispatchEvent(new Event('input'));
+            document.getElementById('brightness').dispatchEvent(new Event('input'));
         }
     </script>
 </body>
