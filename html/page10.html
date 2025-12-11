@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atelier Dessin</title>
+    <title>Atelier Dessin - Mode Jeu</title>
     <style>
+        /* Styles existants conservés - même CSS que précédemment */
         * {
             margin: 0;
             padding: 0;
@@ -17,6 +18,8 @@
             --primary-hover: #3a5a8c;
             --secondary: #6c757d;
             --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
             --background: #f8f9fa;
             --foreground: #1a1a1a;
             --card: #ffffff;
@@ -71,6 +74,46 @@
             color: var(--secondary);
         }
 
+        /* Bouton mode jeu */
+        .mode-switcher {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .mode-btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius-lg);
+            border: 2px solid var(--border);
+            background-color: transparent;
+            color: var(--foreground);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .mode-btn:hover {
+            transform: scale(1.02);
+            border-color: var(--primary);
+            background-color: rgba(74, 111, 165, 0.05);
+        }
+
+        .mode-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .mode-btn.active:hover {
+            background-color: var(--primary-hover);
+            box-shadow: var(--shadow-glow);
+        }
+
         /* Grille principale */
         .main-grid {
             display: grid;
@@ -84,13 +127,31 @@
             }
         }
 
-        /* Panneau d'outils */
+        /* Panneau d'outils - Mode Dessin */
         .tools-panel {
             background-color: var(--card);
             border-radius: var(--border-radius-xl);
             padding: 1.5rem;
             box-shadow: var(--shadow-soft);
             border: 1px solid var(--border);
+        }
+
+        .tools-panel.game-mode {
+            display: none;
+        }
+
+        /* Panneau d'outils - Mode Jeu */
+        .game-tools-panel {
+            background-color: var(--card);
+            border-radius: var(--border-radius-xl);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid var(--border);
+            display: none;
+        }
+
+        .game-tools-panel.active {
+            display: block;
         }
 
         .tools-panel h3 {
@@ -136,7 +197,7 @@
             box-shadow: var(--shadow-glow);
         }
 
-        /* Tailles de pinceau */
+        /* Tailles de pinceau - Mode Dessin uniquement */
         .brush-sizes {
             display: flex;
             gap: 0.5rem;
@@ -164,7 +225,7 @@
             border-color: var(--primary);
         }
 
-        /* Tampons */
+        /* Tampons - Mode Dessin uniquement */
         .stamps-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -242,6 +303,7 @@
             box-shadow: var(--shadow-medium);
             border: 1px solid var(--border);
             overflow: hidden;
+            position: relative;
         }
 
         canvas {
@@ -254,7 +316,71 @@
             box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        /* Indicateur d'outil */
+        /* Contrôles du jeu */
+        .game-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: var(--muted);
+            border-radius: var(--border-radius-lg);
+            display: none;
+        }
+
+        .game-controls.active {
+            display: flex;
+        }
+
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .timer-container {
+            text-align: center;
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        .timer {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-soft);
+            transition: all 0.3s ease;
+        }
+
+        .timer.warning {
+            color: var(--warning);
+            background-color: rgba(245, 158, 11, 0.1);
+            animation: pulse 1s infinite;
+        }
+
+        .timer.danger {
+            color: var(--danger);
+            background-color: rgba(239, 68, 68, 0.1);
+            animation: pulse 0.5s infinite;
+        }
+
+        .level-info {
+            font-size: 1rem;
+            color: var(--muted-foreground);
+        }
+
+        .game-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+
+        /* Indicateur d'outil - Mode Dessin */
         .tool-indicator {
             display: flex;
             align-items: center;
@@ -289,6 +415,32 @@
             font-size: 1rem;
         }
 
+        /* Instructions */
+        .instructions {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: rgba(74, 111, 165, 0.1);
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--primary);
+            display: none;
+        }
+
+        .instructions.active {
+            display: block;
+        }
+
+        .instructions h4 {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
+        .instructions ul {
+            padding-left: 1.5rem;
+            font-size: 0.875rem;
+            color: var(--muted-foreground);
+        }
+
         /* Toast */
         .toast {
             position: fixed;
@@ -317,6 +469,85 @@
             font-size: 1.25rem;
         }
 
+        /* Zone de séparation pour le coloriage */
+        .coloring-boundary {
+            pointer-events: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+        }
+
+        /* Indicateur de progression */
+        .progress-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .progress-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .progress-dot.active {
+            background-color: var(--primary);
+            transform: scale(1.2);
+        }
+
+        .progress-dot.completed {
+            background-color: var(--success);
+        }
+
+        /* Taille du pinceau pour le jeu */
+        .game-brush-size {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .game-brush-size label {
+            font-size: 0.875rem;
+            color: var(--muted-foreground);
+        }
+
+        .game-brush-size input {
+            flex: 1;
+            height: 6px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: var(--border);
+            border-radius: 3px;
+            outline: none;
+        }
+
+        .game-brush-size input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+        }
+
+        .game-brush-size input::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            border: none;
+        }
+
         /* Animations CSS */
         @keyframes fadeIn {
             from {
@@ -337,6 +568,73 @@
                 transform: translateY(-10px);
             }
         }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
+        /* Contrôle volume */
+.volume-control {
+    position: fixed;
+    bottom: 1rem;
+    left: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: var(--card);
+    padding: 0.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-soft);
+    border: 1px solid var(--border);
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+    z-index: 100;
+}
+
+.volume-control:hover {
+    opacity: 1;
+}
+
+#volume-toggle {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.25rem;
+}
+
+#volume-slider {
+    width: 80px;
+    height: 6px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: var(--border);
+    border-radius: 3px;
+    outline: none;
+}
+
+#volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--primary);
+    cursor: pointer;
+}
+
+#volume-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--primary);
+    cursor: pointer;
+    border: none;
+}
     </style>
 </head>
 <body>
@@ -344,14 +642,26 @@
         <!-- En-tête -->
         <div class="header">
             <span class="header-emoji">🎨</span>
-            <h1>Atelier Dessin</h1>
-            <p>Exprime ta créativité !</p>
+            <h1>Atelier Dessin - Mode Jeu</h1>
+            <p>Coloriez les images dans le temps imparti !</p>
+        </div>
+
+        <!-- Sélecteur de mode -->
+        <div class="mode-switcher">
+            <button class="mode-btn active" id="mode-free">
+                <span>🖌</span>
+                Mode Libre
+            </button>
+            <button class="mode-btn" id="mode-game">
+                <span>🎮</span>
+                Mode Jeu
+            </button>
         </div>
 
         <!-- Grille principale -->
         <div class="main-grid">
-            <!-- Panneau d'outils -->
-            <div class="tools-panel">
+            <!-- Panneau d'outils - Mode Dessin -->
+            <div class="tools-panel" id="drawing-tools">
                 <h3>Outils</h3>
 
                 <!-- Couleurs -->
@@ -371,7 +681,7 @@
                 </div>
 
                 <!-- Tampons -->
-                <div class="tool-section">
+                <div class="tool-section" id="stamps-section">
                     <p>Tampons</p>
                     <div class="stamps-grid" id="stamps-grid">
                         <!-- Les tampons seront générées par JavaScript -->
@@ -380,23 +690,8 @@
 
                 <!-- Actions -->
                 <div class="tool-section">
-                    <div class="actions-grid">
-                        <button class="action-btn" id="eraser-btn">
-                            <span>🧽</span>
-                            Gomme
-                        </button>
-                        <button class="action-btn" id="clear-btn">
-                            <span>🗑️</span>
-                            Effacer tout
-                        </button>
-                        <button class="action-btn primary" id="save-btn">
-                            <span>💾</span>
-                            Sauvegarder
-                        </button>
-                        <button class="action-btn" id="download-btn">
-                            <span>📥</span>
-                            Télécharger
-                        </button>
+                    <div class="actions-grid" id="actions-grid">
+                        <!-- Boutons seront mis à jour par JavaScript -->
                     </div>
                 </div>
 
@@ -408,11 +703,87 @@
                 </div>
             </div>
 
+            <!-- Panneau d'outils - Mode Jeu -->
+            <div class="game-tools-panel" id="game-tools">
+                <h3>🎮 Palette de Couleurs</h3>
+                
+                <!-- Couleurs du jeu -->
+                <div class="tool-section">
+                    <p>Sélectionnez une couleur :</p>
+                    <div class="colors-grid" id="game-colors-grid">
+                        <!-- Les couleurs du jeu seront générées par JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Taille du pinceau pour le jeu -->
+                <div class="tool-section">
+                    <p>Taille du pinceau :</p>
+                    <div class="game-brush-size">
+                        <label for="game-brush-slider">Petit</label>
+                        <input type="range" id="game-brush-slider" min="5" max="50" value="20">
+                        <label for="game-brush-slider">Grand</label>
+                    </div>
+                </div>
+
+                <!-- Gomme pour le mode jeu -->
+                <div class="tool-section">
+                    <div class="actions-grid" id="game-actions">
+                        <button class="action-btn" id="game-eraser-btn">
+                            <span>🧽</span>
+                            Gomme
+                        </button>
+                        <button class="action-btn" id="game-clear-btn">
+                            <span>🗑</span>
+                            Effacer tout
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Instructions du jeu -->
+                <div class="instructions" id="game-instructions">
+                    <h4>🎮 Instructions du jeu :</h4>
+                    <ul>
+                        <li>Colorez l'image en noir et blanc pendant 180 secondes</li>
+                        <li>Cliquez et glissez pour colorier (comme un pinceau)</li>
+                        <li>Utilisez les couleurs disponibles dans la palette</li>
+                        <li>Utilisez la gomme pour corriger vos erreurs</li>
+                        <li>Si vous terminez avant la fin du temps, passez au niveau suivant</li>
+                    </ul>
+                </div>
+
+                <!-- Indicateur de progression -->
+                <div class="progress-indicator" id="progress-indicator">
+                    <!-- Les points de progression seront générés par JavaScript -->
+                </div>
+            </div>
+
             <!-- Canvas -->
             <div class="canvas-container">
                 <canvas id="drawing-canvas">
                     Votre navigateur ne supporte pas le canvas.
                 </canvas>
+
+                <!-- Contrôles du jeu -->
+                <div class="game-controls" id="game-controls">
+                    <div class="game-info">
+                        <div class="level-info">Niveau <span id="current-level">1</span>/<span id="total-levels">7</span></div>
+                        <div class="timer-container">
+                            <div class="timer" id="game-timer">
+                                ⏱ <span id="timer-seconds">180</span> secondes
+                            </div>
+                        </div>
+                    </div>
+                    <div class="game-buttons">
+                        <button class="action-btn" id="next-level-btn" disabled>
+                            <span>⏭</span>
+                            Niveau suivant
+                        </button>
+                        <button class="action-btn" id="restart-game-btn">
+                            <span>🔄</span>
+                            Recommencer
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -422,6 +793,34 @@
         <span class="toast-emoji" id="toast-emoji">🎨</span>
         <span id="toast-message">Dessin sauvegardé !</span>
     </div>
+     <!-- Votre code existant... -->
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <span class="toast-emoji" id="toast-emoji">🎨</span>
+        <span id="toast-message">Dessin sauvegardé !</span>
+    </div>
+
+    <!-- Musique de fond -->
+    <!-- Musique de fond -->
+<audio id="background-music" loop>
+    <source src="https://assets.mixkit.co/music/preview/mixkit-deep-urban-623.mp3" type="audio/mpeg">
+    Votre navigateur ne supporte pas l'élément audio.
+</audio>
+
+<!-- Contrôle volume discret (optionnel) -->
+<div class="volume-control" id="volume-control">
+    <button id="volume-toggle" title="Volume">🔊</button>
+    <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="0.2" title="Volume">
+</div>
+
+<!-- Contrôle volume discret (optionnel) -->
+<div class="volume-control" id="volume-control">
+    <button id="volume-toggle" title="Volume">🔊</button>
+    <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="0.2" title="Volume">
+</div>
+
+    
 
     <script>
         // Configuration du dessin
@@ -443,25 +842,81 @@
             { value: 30, label: 'Grand' },
         ];
 
-        const stamps = ['🐱', '🐕', '🐰', '🌸', '⭐', '❤️', '🌈', '🦋'];
+        const stamps = ['🐱', '🐕', '🐰', '🌸', '⭐', '❤', '🌈', '🦋'];
+
+        // Nouvelles images pour le mode jeu (en noir et blanc)
+        const gameImages = [
+            {
+                bwUrl: 'https://cdn.pixabay.com/photo/2024/09/11/07/48/ghost-9039075_1280.png',
+                name: 'Fantôme',
+                colorZones: []
+            },
+            {
+                bwUrl: 'https://cdn.pixabay.com/photo/2025/03/01/16/56/easter-9440439_1280.png',
+                name: 'Pâques',
+                colorZones: []
+            },
+            {
+                bwUrl: 'https://cdn.pixabay.com/photo/2022/10/23/19/56/dinosaur-7542058_1280.png',
+                name: 'Dinosaure',
+                colorZones: []
+            },
+            {
+                bwUrl: 'https://cdn.pixabay.com/photo/2024/09/11/07/48/bat-9039080_1280.png',
+                name: 'Chauve-souris',
+                colorZones: []
+            },
+            {
+                bwUrl: 'https://cdn.pixabay.com/photo/2013/07/12/12/00/fish-145081_1280.png',
+                name: 'Poisson',
+                colorZones: []
+            },
+            {
+                bwUrl: 'https://cdn.pixabay.com/photo/2025/10/31/16/27/christmas-coloring-page-9929381_1280.png',
+                name: 'Noël',
+                colorZones: []
+            },
+            {
+                bwUrl: 'https://cdn.pixabay.com/photo/2025/11/07/16/01/coloring-page-9943300_1280.png',
+                name: 'Coloriage',
+                colorZones: []
+            }
+        ];
 
         // État de l'application
         let canvas = null;
         let ctx = null;
         let isDrawing = false;
         let currentColor = '#3B82F6';
-        let brushSize = 15;
+        let brushSize = 20; // Taille par défaut pour le jeu
         let isEraser = false;
         let currentStamp = null;
         let lastX = 0;
         let lastY = 0;
 
+        // État du mode jeu
+        let currentMode = 'free'; // 'free' ou 'game'
+        let currentLevel = 0;
+        let gameTimer =180;
+        let gameInterval = null;
+        let gameImageData = null;
+        let originalImageData = null; // Pour garder l'image originale
+        let gameColors = colors.filter(color => 
+            color.value !== '#000000' && color.value !== '#FFFFFF'
+        ).slice(0, 8);
+
+        // Variables pour le dessin en temps réel
+        let isDrawingGame = false;
+
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
             initCanvas();
+            initBackgroundMusic();
             setupTools();
             setupEventListeners();
             updateToolIndicator();
+            loadGameImages();
+            setupProgressIndicator();
         });
 
         // Initialiser le canvas
@@ -481,8 +936,94 @@
             // Configurer le style de dessin par défaut
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
+            ctx.globalCompositeOperation = 'source-over';
         }
-
+         function initBackgroundMusic() {
+    const music = document.getElementById('background-music');
+    music.volume = 0.2; // Volume à 20%
+    
+    // Essayer de démarrer automatiquement
+    const playMusic = () => {
+        music.play().catch(error => {
+            console.log("Musique en attente d'interaction utilisateur");
+            // Démarrer au premier clic
+            document.addEventListener('click', () => {
+                music.play();
+            }, { once: true });
+        });
+    };
+    
+    // Démarrer après un court délai
+    setTimeout(playMusic, 1000);
+}
+// Initialiser la musique de fond
+function initBackgroundMusic() {
+    backgroundMusic = document.getElementById('background-music');
+    
+    // Configurer le volume initial (20%)
+    backgroundMusic.volume = 0.2;
+    
+    // Essayer de démarrer la musique automatiquement
+    const playMusic = () => {
+        if (backgroundMusic.paused) {
+            backgroundMusic.play().catch(error => {
+                console.log("Lecture automatique bloquée:", error);
+                // L'utilisateur doit interagir pour démarrer la musique
+                document.addEventListener('click', startMusicOnInteraction, { once: true });
+            });
+        }
+    };
+    
+    // Démarrer après un délai court
+    setTimeout(playMusic, 1000);
+    
+    // Configurer les contrôles de volume
+    const volumeSlider = document.getElementById('volume-slider');
+    const volumeToggle = document.getElementById('volume-toggle');
+    
+    if (volumeSlider) {
+        volumeSlider.addEventListener('input', function() {
+            backgroundMusic.volume = this.value;
+            // Mettre à jour l'icône en fonction du volume
+            updateVolumeIcon(this.value);
+        });
+    }
+    
+    if (volumeToggle) {
+        volumeToggle.addEventListener('click', function() {
+            isMusicPlaying = !isMusicPlaying;
+            if (isMusicPlaying) {
+                backgroundMusic.play();
+                updateVolumeIcon(backgroundMusic.volume);
+            } else {
+                backgroundMusic.pause();
+                this.textContent = '🔇';
+            }
+        });
+    }
+    
+    // Mettre à jour l'icône du volume
+    function updateVolumeIcon(volume) {
+        if (!volumeToggle) return;
+        
+        if (volume == 0) {
+            volumeToggle.textContent = '🔇';
+        } else if (volume < 0.3) {
+            volumeToggle.textContent = '🔈';
+        } else if (volume < 0.7) {
+            volumeToggle.textContent = '🔉';
+        } else {
+            volumeToggle.textContent = '🔊';
+        }
+    }
+    
+    // Démarrer la musique au premier clic si nécessaire
+    function startMusicOnInteraction() {
+        if (backgroundMusic.paused) {
+            backgroundMusic.play();
+        }
+    }
+}
         // Redimensionner le canvas
         function resizeCanvas() {
             const container = canvas.parentElement;
@@ -496,16 +1037,18 @@
             redrawCanvas();
         }
 
-        // Redessiner le contenu (pour le redimensionnement)
+        // Redessiner le contenu
         function redrawCanvas() {
-            // Dans une vraie application, vous sauvegarderiez les dessins
-            // et les redessineriez ici. Pour la simplicité, on efface.
-            clearCanvas();
+            if (currentMode === 'game' && gameImages[currentLevel]) {
+                loadAndDisplayImage(gameImages[currentLevel].bwUrl);
+            } else {
+                clearCanvas();
+            }
         }
 
         // Configurer les outils
         function setupTools() {
-            // Configurer les couleurs
+            // Configurer les couleurs du mode dessin
             const colorsGrid = document.getElementById('colors-grid');
             colorsGrid.innerHTML = colors.map(color => `
                 <button class="color-btn ${color.value === currentColor ? 'active' : ''}"
@@ -516,7 +1059,18 @@
                 </button>
             `).join('');
 
-            // Configurer les tailles de pinceau
+            // Configurer les couleurs du mode jeu
+            const gameColorsGrid = document.getElementById('game-colors-grid');
+            gameColorsGrid.innerHTML = gameColors.map(color => `
+                <button class="color-btn ${color.value === currentColor && !isEraser ? 'active' : ''}"
+                        style="background-color: ${color.value}"
+                        title="${color.name}"
+                        data-color="${color.value}"
+                        data-name="${color.name}">
+                </button>
+            `).join('');
+
+            // Configurer les tailles de pinceau (mode dessin uniquement)
             const brushSizesGrid = document.getElementById('brush-sizes');
             brushSizesGrid.innerHTML = brushSizes.map(size => `
                 <button class="size-btn ${size.value === brushSize ? 'active' : ''}"
@@ -525,7 +1079,7 @@
                 </button>
             `).join('');
 
-            // Configurer les tampons
+            // Configurer les tampons (mode dessin uniquement)
             const stampsGrid = document.getElementById('stamps-grid');
             stampsGrid.innerHTML = stamps.map(stamp => `
                 <button class="stamp-btn ${stamp === currentStamp ? 'active' : ''}"
@@ -533,23 +1087,26 @@
                     ${stamp}
                 </button>
             `).join('');
+
+            // Configurer les actions
+            updateActionButtons();
         }
 
         // Configurer les écouteurs d'événements
         function setupEventListeners() {
-            // Événements de canvas
-            canvas.addEventListener('mousedown', startDrawing);
-            canvas.addEventListener('mousemove', draw);
-            canvas.addEventListener('mouseup', stopDrawing);
-            canvas.addEventListener('mouseout', stopDrawing);
+            // Événements de canvas pour le mode dessin
+            canvas.addEventListener('mousedown', handleCanvasMouseDown);
+            canvas.addEventListener('mousemove', handleCanvasMouseMove);
+            canvas.addEventListener('mouseup', handleCanvasMouseUp);
+            canvas.addEventListener('mouseout', handleCanvasMouseUp);
             
             // Support tactile
             canvas.addEventListener('touchstart', handleTouchStart);
             canvas.addEventListener('touchmove', handleTouchMove);
-            canvas.addEventListener('touchend', stopDrawing);
+            canvas.addEventListener('touchend', handleCanvasMouseUp);
             
-            // Événements de couleur
-            document.querySelectorAll('.color-btn').forEach(btn => {
+            // Événements de couleur (mode dessin)
+            document.querySelectorAll('#colors-grid .color-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     currentColor = btn.dataset.color;
                     isEraser = false;
@@ -559,7 +1116,16 @@
                 });
             });
             
-            // Événements de taille
+            // Événements de couleur (mode jeu)
+            document.querySelectorAll('#game-colors-grid .color-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    currentColor = btn.dataset.color;
+                    isEraser = false;
+                    updateGameTools();
+                });
+            });
+            
+            // Événements de taille (mode dessin uniquement)
             document.querySelectorAll('.size-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     brushSize = parseInt(btn.dataset.size);
@@ -568,7 +1134,7 @@
                 });
             });
             
-            // Événements de tampon
+            // Événements de tampon (mode dessin uniquement)
             document.querySelectorAll('.stamp-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     currentStamp = btn.dataset.stamp === currentStamp ? null : btn.dataset.stamp;
@@ -578,69 +1144,44 @@
                 });
             });
             
-            // Boutons d'action
-            document.getElementById('eraser-btn').addEventListener('click', toggleEraser);
-            document.getElementById('clear-btn').addEventListener('click', clearCanvas);
-            document.getElementById('save-btn').addEventListener('click', saveDrawing);
-            document.getElementById('download-btn').addEventListener('click', downloadDrawing);
-        }
-
-        // Mettre à jour l'affichage des outils
-        function updateTools() {
-            // Mettre à jour les couleurs
-            document.querySelectorAll('.color-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.color === currentColor && !isEraser);
-            });
+            // Boutons de mode
+            document.getElementById('mode-free').addEventListener('click', () => switchMode('free'));
+            document.getElementById('mode-game').addEventListener('click', () => switchMode('game'));
             
-            // Mettre à jour les tailles
-            document.querySelectorAll('.size-btn').forEach(btn => {
-                btn.classList.toggle('active', parseInt(btn.dataset.size) === brushSize);
-            });
+            // Boutons du jeu
+            document.getElementById('next-level-btn').addEventListener('click', nextLevel);
+            document.getElementById('restart-game-btn').addEventListener('click', restartGame);
             
-            // Mettre à jour les tampons
-            document.querySelectorAll('.stamp-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.stamp === currentStamp);
-            });
+            // Outils du mode jeu
+            document.getElementById('game-eraser-btn').addEventListener('click', toggleGameEraser);
+            document.getElementById('game-clear-btn').addEventListener('click', clearGameCanvas);
             
-            // Mettre à jour le bouton gomme
-            const eraserBtn = document.getElementById('eraser-btn');
-            eraserBtn.classList.toggle('primary', isEraser);
-        }
-
-        // Mettre à jour l'indicateur d'outil
-        function updateToolIndicator() {
-            const toolPreview = document.getElementById('tool-preview');
-            const toolName = document.getElementById('tool-name');
-            
-            if (currentStamp) {
-                toolPreview.className = 'tool-preview stamp';
-                toolPreview.textContent = currentStamp;
-                toolName.textContent = `Tampon ${currentStamp}`;
-            } else if (isEraser) {
-                toolPreview.className = 'tool-preview eraser';
-                toolPreview.textContent = '';
-                toolName.textContent = `Gomme (${brushSize}px)`;
-            } else {
-                const colorName = colors.find(c => c.value === currentColor)?.name || 'Couleur';
-                toolPreview.className = 'tool-preview brush';
-                toolPreview.style.backgroundColor = currentColor;
-                toolPreview.textContent = '';
-                toolName.textContent = `${colorName} (${brushSize}px)`;
+            // Curseur de taille de pinceau pour le jeu
+            const brushSlider = document.getElementById('game-brush-slider');
+            if (brushSlider) {
+                brushSlider.addEventListener('input', function() {
+                    brushSize = parseInt(this.value);
+                });
             }
         }
 
-        // Basculer la gomme
-        function toggleEraser() {
-            isEraser = !isEraser;
-            if (isEraser) {
-                currentStamp = null;
+        // Gérer les événements de canvas
+        function handleCanvasMouseDown(e) {
+            if (currentMode === 'game') {
+                // Mode jeu - démarrer le dessin
+                e.preventDefault();
+                isDrawingGame = true;
+                
+                const pos = getMousePos(e);
+                lastX = pos.x;
+                lastY = pos.y;
+                
+                // Dessiner un point immédiatement
+                drawGamePoint(pos.x, pos.y);
+                return;
             }
-            updateTools();
-            updateToolIndicator();
-        }
-
-        // Démarrer le dessin
-        function startDrawing(e) {
+            
+            // Mode dessin
             e.preventDefault();
             isDrawing = true;
             
@@ -657,8 +1198,20 @@
             }
         }
 
-        // Dessiner
-        function draw(e) {
+        function handleCanvasMouseMove(e) {
+            if (currentMode === 'game' && isDrawingGame) {
+                // Mode jeu - continuer à dessiner
+                e.preventDefault();
+                const pos = getMousePos(e);
+                drawGameLine(lastX, lastY, pos.x, pos.y);
+                lastX = pos.x;
+                lastY = pos.y;
+                return;
+            }
+            
+            // Mode dessin
+            if (currentMode !== 'free') return;
+            
             e.preventDefault();
             if (!isDrawing || currentStamp) return;
             
@@ -674,15 +1227,236 @@
             lastY = pos.y;
         }
 
-        // Arrêter le dessin
-        function stopDrawing() {
+        function handleCanvasMouseUp() {
+            if (currentMode === 'game') {
+                isDrawingGame = false;
+                // Vérifier si le niveau est terminé
+                setTimeout(checkLevelCompletion, 100);
+                return;
+            }
+            
             isDrawing = false;
             ctx.beginPath();
         }
 
+        // Dessiner un point dans le mode jeu
+        function drawGamePoint(x, y) {
+            ctx.save();
+            
+            if (isEraser) {
+                // Mode gomme - utiliser la composition pour effacer
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.fillStyle = 'rgba(0,0,0,1)';
+            } else {
+                // Mode coloriage
+                ctx.globalCompositeOperation = 'source-over';
+                ctx.fillStyle = currentColor;
+            }
+            
+            ctx.beginPath();
+            ctx.arc(x, y, brushSize / 2, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.restore();
+        }
+
+        // Dessiner une ligne dans le mode jeu
+        function drawGameLine(x1, y1, x2, y2) {
+            ctx.save();
+            
+            if (isEraser) {
+                // Mode gomme
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.strokeStyle = 'rgba(0,0,0,1)';
+            } else {
+                // Mode coloriage
+                ctx.globalCompositeOperation = 'source-over';
+                ctx.strokeStyle = currentColor;
+            }
+            
+            ctx.lineWidth = brushSize;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+            
+            ctx.restore();
+        }
+
+        // Vérifier si le niveau est complété
+        function checkLevelCompletion() {
+            if (!originalImageData || currentMode !== 'game') return false;
+            
+            const currentData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            let coloredPixels = 0;
+            let totalPixels = 0;
+            
+            // Comparer avec l'image originale pour voir ce qui a été colorié
+            for (let i = 0; i < originalImageData.data.length; i += 4) {
+                const origR = originalImageData.data[i];
+                const origG = originalImageData.data[i + 1];
+                const origB = originalImageData.data[i + 2];
+                
+                const currR = currentData.data[i];
+                const currG = currentData.data[i + 1];
+                const currB = currentData.data[i + 2];
+                
+                // Compter les pixels qui étaient blancs dans l'original
+                // et qui ne le sont plus maintenant (ont été coloriés)
+                if (origR > 200 && origG > 200 && origB > 200) {
+                    totalPixels++;
+                    if (currR < 200 || currG < 200 || currB < 200) {
+                        coloredPixels++;
+                    }
+                }
+            }
+            
+            // Si au moins 70% des zones blanches sont coloriées, le niveau est terminé
+            if (totalPixels > 0 && coloredPixels / totalPixels >= 0.7) {
+                document.getElementById('next-level-btn').disabled = false;
+                if (gameInterval) clearInterval(gameInterval);
+                showToast('🎉 Niveau terminé ! Vous pouvez passer au suivant.');
+                updateProgressIndicator();
+                return true;
+            }
+            
+            return false;
+        }
+
+        // Mettre à jour les boutons d'action selon le mode
+        function updateActionButtons() {
+            const actionsGrid = document.getElementById('actions-grid');
+            
+            if (currentMode === 'free') {
+                actionsGrid.innerHTML = `
+                    <button class="action-btn" id="eraser-btn">
+                        <span>🧽</span>
+                        Gomme
+                    </button>
+                    <button class="action-btn" id="clear-btn">
+                        <span>🗑</span>
+                        Effacer tout
+                    </button>
+                    <button class="action-btn primary" id="save-btn">
+                        <span>💾</span>
+                        Sauvegarder
+                    </button>
+                    <button class="action-btn" id="download-btn">
+                        <span>📥</span>
+                        Télécharger
+                    </button>
+                `;
+                
+                // Réattacher les événements
+                document.getElementById('eraser-btn').addEventListener('click', toggleEraser);
+                document.getElementById('clear-btn').addEventListener('click', clearCanvas);
+                document.getElementById('save-btn').addEventListener('click', saveDrawing);
+                document.getElementById('download-btn').addEventListener('click', downloadDrawing);
+            } else {
+                actionsGrid.innerHTML = `
+                    <button class="action-btn" id="clear-game-btn">
+                        <span>🗑</span>
+                        Effacer le coloriage
+                    </button>
+                `;
+                
+                // Réattacher les événements
+                document.getElementById('clear-game-btn').addEventListener('click', clearGameCanvas);
+            }
+        }
+
+        // Mettre à jour l'affichage des outils
+        function updateTools() {
+            // Mettre à jour les couleurs du mode dessin
+            document.querySelectorAll('#colors-grid .color-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.color === currentColor && !isEraser);
+            });
+            
+            // Mettre à jour les tailles (mode dessin uniquement)
+            document.querySelectorAll('.size-btn').forEach(btn => {
+                btn.classList.toggle('active', parseInt(btn.dataset.size) === brushSize);
+            });
+            
+            // Mettre à jour les tampons (mode dessin uniquement)
+            document.querySelectorAll('.stamp-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.stamp === currentStamp);
+            });
+            
+            // Mettre à jour le bouton gomme
+            const eraserBtn = document.getElementById('eraser-btn');
+            if (eraserBtn) {
+                eraserBtn.classList.toggle('primary', isEraser);
+            }
+        }
+
+        // Mettre à jour les outils du mode jeu
+        function updateGameTools() {
+            // Mettre à jour les couleurs du mode jeu
+            document.querySelectorAll('#game-colors-grid .color-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.color === currentColor && !isEraser);
+            });
+            
+            // Mettre à jour le bouton gomme du jeu
+            const gameEraserBtn = document.getElementById('game-eraser-btn');
+            if (gameEraserBtn) {
+                gameEraserBtn.classList.toggle('primary', isEraser);
+            }
+        }
+
+        // Mettre à jour l'indicateur d'outil (mode dessin uniquement)
+        function updateToolIndicator() {
+            if (currentMode === 'game') return;
+            
+            const toolPreview = document.getElementById('tool-preview');
+            const toolName = document.getElementById('tool-name');
+            
+            if (currentStamp) {
+                toolPreview.className = 'tool-preview stamp';
+                toolPreview.textContent = currentStamp;
+                toolName.textContent = Tampon ${currentStamp};
+            } else if (isEraser) {
+                toolPreview.className = 'tool-preview eraser';
+                toolPreview.textContent = '';
+                toolName.textContent = Gomme (${brushSize}px);
+            } else {
+                const colorName = colors.find(c => c.value === currentColor)?.name || 'Couleur';
+                toolPreview.className = 'tool-preview brush';
+                toolPreview.style.backgroundColor = currentColor;
+                toolPreview.textContent = '';
+                toolName.textContent = ${colorName} (${brushSize}px);
+            }
+        }
+
+        // Basculer la gomme (mode dessin uniquement)
+        function toggleEraser() {
+            if (currentMode === 'game') return;
+            
+            isEraser = !isEraser;
+            if (isEraser) {
+                currentStamp = null;
+            }
+            updateTools();
+            updateToolIndicator();
+        }
+
+        // Basculer la gomme du mode jeu
+        function toggleGameEraser() {
+            if (currentMode !== 'game') return;
+            
+            isEraser = !isEraser;
+            if (!isEraser) {
+                // Revenir à la première couleur si on désactive la gomme
+                currentColor = gameColors[0].value;
+            }
+            updateGameTools();
+        }
+
         // Dessiner un tampon
         function drawStamp(x, y) {
-            ctx.font = `${brushSize * 4}px Arial`;
+            ctx.font = ${brushSize * 4}px Arial;
             ctx.fillStyle = currentColor;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
@@ -712,20 +1486,73 @@
         // Gérer le toucher (pour mobile)
         function handleTouchStart(e) {
             e.preventDefault();
-            startDrawing(e.touches[0]);
+            if (currentMode === 'game') {
+                // Mode jeu
+                isDrawingGame = true;
+                const pos = getMousePos(e.touches[0]);
+                lastX = pos.x;
+                lastY = pos.y;
+                drawGamePoint(pos.x, pos.y);
+            } else {
+                // Mode dessin
+                const pos = getMousePos(e.touches[0]);
+                lastX = pos.x;
+                lastY = pos.y;
+                isDrawing = true;
+                
+                if (currentStamp) {
+                    drawStamp(pos.x, pos.y);
+                    isDrawing = false;
+                } else {
+                    ctx.beginPath();
+                    ctx.moveTo(lastX, lastY);
+                }
+            }
         }
 
         function handleTouchMove(e) {
             e.preventDefault();
-            if (isDrawing) {
-                draw(e.touches[0]);
+            
+            if (currentMode === 'game' && isDrawingGame) {
+                // Mode jeu
+                const pos = getMousePos(e.touches[0]);
+                drawGameLine(lastX, lastY, pos.x, pos.y);
+                lastX = pos.x;
+                lastY = pos.y;
+                return;
             }
+            
+            // Mode dessin
+            if (!isDrawing || currentStamp) return;
+            
+            const pos = getMousePos(e.touches[0]);
+            
+            ctx.strokeStyle = isEraser ? '#FFFFFF' : currentColor;
+            ctx.lineWidth = brushSize;
+            
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+            
+            lastX = pos.x;
+            lastY = pos.y;
         }
 
-        // Effacer le canvas
+        // Effacer le canvas (mode libre)
         function clearCanvas() {
             ctx.fillStyle = '#FFFFFF';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            if (currentMode === 'game' && gameImages[currentLevel]) {
+                loadAndDisplayImage(gameImages[currentLevel].bwUrl);
+            }
+        }
+
+        // Effacer le coloriage du jeu
+        function clearGameCanvas() {
+            if (currentMode === 'game') {
+                loadAndDisplayImage(gameImages[currentLevel].bwUrl);
+                showToast('🧽 Coloriage effacé !');
+            }
         }
 
         // Sauvegarder le dessin
@@ -739,10 +1566,205 @@
         function downloadDrawing() {
             const dataUrl = canvas.toDataURL('image/png');
             const link = document.createElement('a');
-            link.download = `dessin-${Date.now()}.png`;
+            link.download = dessin-${Date.now()}.png;
             link.href = dataUrl;
             link.click();
             showToast('📥 Dessin téléchargé !');
+        }
+
+        // Charger les images du jeu
+        function loadGameImages() {
+            // Précharger les images
+            gameImages.forEach(img => {
+                const bwImg = new Image();
+                bwImg.src = img.bwUrl;
+                bwImg.crossOrigin = "anonymous";
+            });
+        }
+
+        // Configurer l'indicateur de progression
+        function setupProgressIndicator() {
+            const progressIndicator = document.getElementById('progress-indicator');
+            progressIndicator.innerHTML = gameImages.map((_, index) => `
+                <div class="progress-dot ${index === 0 ? 'active' : ''}" 
+                     data-level="${index}"></div>
+            `).join('');
+        }
+
+        // Mettre à jour l'indicateur de progression
+        function updateProgressIndicator() {
+            const dots = document.querySelectorAll('.progress-dot');
+            dots.forEach((dot, index) => {
+                dot.classList.remove('active', 'completed');
+                
+                if (index < currentLevel) {
+                    dot.classList.add('completed');
+                } else if (index === currentLevel) {
+                    dot.classList.add('active');
+                }
+            });
+        }
+
+        // Changer de mode
+        function switchMode(mode) {
+            currentMode = mode;
+            
+            // Mettre à jour les boutons de mode
+            document.getElementById('mode-free').classList.toggle('active', mode === 'free');
+            document.getElementById('mode-game').classList.toggle('active', mode === 'game');
+            
+            // Mettre à jour l'affichage des panneaux d'outils
+            document.getElementById('drawing-tools').style.display = mode === 'free' ? 'block' : 'none';
+            document.getElementById('game-tools').classList.toggle('active', mode === 'game');
+            document.getElementById('game-instructions').classList.toggle('active', mode === 'game');
+            document.getElementById('game-controls').classList.toggle('active', mode === 'game');
+            
+            // Mettre à jour les actions
+            updateActionButtons();
+            
+            // Réinitialiser l'état du jeu
+            if (mode === 'game') {
+                // Réinitialiser pour le mode jeu
+                isEraser = false;
+                isDrawingGame = false;
+                currentColor = gameColors[0].value;
+                brushSize = 20; // Taille par défaut pour le jeu
+                updateGameTools();
+                startGame();
+            } else {
+                // Arrêter le timer du jeu
+                if (gameInterval) clearInterval(gameInterval);
+                // Réinitialiser pour le mode libre
+                isEraser = false;
+                currentColor = colors[0].value;
+                brushSize = 15; // Taille par défaut pour le mode libre
+                updateTools();
+                updateToolIndicator();
+                clearCanvas();
+            }
+        }
+
+        // Démarrer le jeu
+        function startGame() {
+            currentLevel = 0;
+            updateProgressIndicator();
+            startLevel();
+        }
+
+        // Démarrer un niveau
+        function startLevel() {
+            // Arrêter le timer précédent
+            if (gameInterval) clearInterval(gameInterval);
+            
+            // Réinitialiser le timer
+            gameTimer = 180;
+            
+            // Mettre à jour l'interface
+            document.getElementById('current-level').textContent = currentLevel + 1;
+            document.getElementById('total-levels').textContent = gameImages.length;
+            document.getElementById('timer-seconds').textContent = gameTimer;
+            document.getElementById('next-level-btn').disabled = true;
+            
+            // Réinitialiser le style du timer
+            const timerElement = document.getElementById('game-timer');
+            timerElement.className = 'timer';
+            
+            // Charger et afficher l'image en noir et blanc
+            loadAndDisplayImage(gameImages[currentLevel].bwUrl);
+            
+            // Démarrer le timer du jeu
+            gameInterval = setInterval(updateGameTimer, 1000);
+            
+            showToast(🎮 Niveau ${currentLevel + 1}: ${gameImages[currentLevel].name} - 180 secondes !);
+        }
+
+        // Mettre à jour le timer du jeu
+        function updateGameTimer() {
+            const timerElement = document.getElementById('game-timer');
+            const timerSeconds = document.getElementById('timer-seconds');
+            
+            timerSeconds.textContent = gameTimer;
+            
+            // Changer le style du timer en fonction du temps restant
+            if (gameTimer <= 160 && gameTimer > 120) {
+                // Avertissement à 50 secondes (jaune/orange)
+                timerElement.className = 'timer warning';
+            } else if (gameTimer <= 120) {
+                // Danger à 30 secondes (rouge)
+                timerElement.className = 'timer danger';
+            }
+            
+            if (gameTimer <= 0) {
+                // Fin du temps
+                clearInterval(gameInterval);
+                showToast('⏰ Temps écoulé ! Le niveau va recommencer.');
+                setTimeout(() => {
+                    startLevel(); // Recommencer le niveau
+                }, 2000);
+            }
+            
+            gameTimer--;
+        }
+
+        // Charger et afficher une image
+        function loadAndDisplayImage(url) {
+            const img = new Image();
+            img.crossOrigin = "anonymous";
+            img.onload = function() {
+                // Effacer le canvas
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Calculer les dimensions pour garder les proportions
+                const canvasAspect = canvas.width / canvas.height;
+                const imgAspect = img.width / img.height;
+                
+                let drawWidth, drawHeight, drawX, drawY;
+                
+                if (imgAspect > canvasAspect) {
+                    // L'image est plus large que le canvas
+                    drawWidth = canvas.width;
+                    drawHeight = canvas.width / imgAspect;
+                    drawX = 0;
+                    drawY = (canvas.height - drawHeight) / 2;
+                } else {
+                    // L'image est plus haute que le canvas
+                    drawHeight = canvas.height;
+                    drawWidth = canvas.height * imgAspect;
+                    drawX = (canvas.width - drawWidth) / 2;
+                    drawY = 0;
+                }
+                
+                // Dessiner l'image
+                ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+                
+                // Sauvegarder les données de l'image originale
+                originalImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                
+                // Réinitialiser le mode de composition
+                ctx.globalCompositeOperation = 'source-over';
+            };
+            img.src = url;
+        }
+
+        // Passer au niveau suivant
+        function nextLevel() {
+            currentLevel++;
+            
+            if (currentLevel >= gameImages.length) {
+                // Fin du jeu
+                showToast('🏆 Félicitations ! Vous avez terminé tous les niveaux !');
+                setTimeout(() => {
+                    switchMode('free');
+                }, 3000);
+            } else {
+                startLevel();
+            }
+        }
+
+        // Recommencer le jeu
+        function restartGame() {
+            startGame();
         }
 
         // Sauvegarder dans le localStorage
@@ -784,6 +1806,12 @@
                 toast.classList.remove('show');
             }, 3000);
         }
-    </script>
+        
+       // Initialiser la musique de fond (version simplifiée)
+
+// Variables pour la musique
+let backgroundMusic = null;
+let isMusicPlaying = true;
+</script>
 </body>
 </html>
